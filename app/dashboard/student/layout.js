@@ -21,6 +21,7 @@ import {
   InputBase,
   Grid,
   useMediaQuery,
+  Tooltip,
 } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import HomeIcon from "@mui/icons-material/Home";
@@ -37,7 +38,7 @@ const drawerWidth = 250;
 
 const menuItems = [
   { text: "Home", path: "/dashboard/student/home", icon: <HomeIcon /> },
-  { text: "Find People", path: "/dashboard/student/dashboard", icon: <DashboardIcon /> },
+  // { text: "Find People", path: "/dashboard/student/find-mentor", icon: <DashboardIcon /> },
   { text: "Booking", path: "/dashboard/student/booking", icon: <LibraryBooksIcon /> },
   { text: "Mock Resumes", path: "/dashboard/student/mock-resumes", icon: <DescriptionIcon /> },
   { text: "Job Card", path: "/dashboard/student/job-card", icon: <WorkIcon /> },
@@ -61,76 +62,78 @@ export default function StudentLayout({ children }) {
   return (
     <Box sx={{ display: "flex", minHeight: "100vh" }}>
       <CssBaseline />
-      
-      {/* Sidebar - Hidden on Mobile */}
-  
-        <Drawer
-          variant="permanent"
-          sx={{
-            width: open ? drawerWidth : 70,
-            flexShrink: 0,
-            "& .MuiDrawer-paper": {
-              width: open ? drawerWidth : 70,
-              boxSizing: "border-box",
-              transition: "width 0.3s ease-in-out",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-            },
-          }}
-        >
-          <Toolbar sx={{ display: "flex", justifyContent: open ? "space-between" : "center", alignItems: "center", backgroundColor: "#4a238d" }}>
-            {open && <Typography variant="h6" color="white">Top Placed</Typography>}
-            <IconButton onClick={() => setOpen(!open)}>
-              {open ? <ChevronLeftIcon /> : <MenuIcon />}
-            </IconButton>
-          </Toolbar>
-          <Divider />
 
-          <List sx={{ flexGrow: 1 }}>
-            {menuItems.map((item) => (
-              <ListItem
-                key={item.text}
-                component={Link}
-                href={item.path}
-                selected={pathname === item.path}
-                sx={{
-                  backgroundColor: pathname === item.path ? "#4a238d" : "transparent",
-                  color: pathname === item.path ? "white" : "inherit",
-                  borderRadius: "10px",
-                  "&:hover": {
-                    backgroundColor: "#4a238d",
-                    color: "white",
-                  },
-                }}
-              >
-                <ListItemIcon sx={{ color: pathname === item.path ? "white" : "inherit" }}>{item.icon}</ListItemIcon>
+      {/* Sidebar - Responsive Drawer */}
+      <Drawer
+        variant="permanent"
+        sx={{
+          width: open ? drawerWidth : 70,
+          flexShrink: 0,
+          "& .MuiDrawer-paper": {
+            width: open ? drawerWidth : 70,
+            boxSizing: "border-box",
+            transition: "width 0.3s ease-in-out",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          },
+        }}
+      >
+        <Toolbar sx={{ display: "flex", justifyContent: open ? "space-between" : "center", alignItems: "center", backgroundColor: "#4a238d" }}>
+          {open && <Typography variant="h6" color="white">Top Placed</Typography>}
+          <IconButton onClick={() => setOpen(!open)} sx={{ color: "white" }}>
+            {open ? <ChevronLeftIcon /> : <MenuIcon />}
+          </IconButton>
+        </Toolbar>
+        <Divider />
+
+        <List sx={{ flexGrow: 1 }}>
+          {menuItems.map((item) => (
+            <Tooltip title={!open ? item.text : ""} placement="right" key={item.text}>
+            <ListItem
+  component={Link}
+  href={item.path}
+  selected={pathname === item.path}
+  sx={{
+    backgroundColor: pathname === item.path ? "#4a238d" : "transparent",
+    color: pathname === item.path ? "white" : "inherit",
+    borderRadius: "10px",
+    "&:hover": {
+      backgroundColor: "#4a238d",
+      color: "white",
+    },
+    cursor: "pointer", // Ensure it's clickable
+  }}
+>
+                <ListItemIcon sx={{ color: pathname === item.path ? "white" : "inherit" }}>
+                  {item.icon}
+                </ListItemIcon>
                 {open && <ListItemText primary={item.text} />}
               </ListItem>
-            ))}
-          </List>
+            </Tooltip>
+          ))}
+        </List>
 
-          <Divider />
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mb: 2 }}>
-            <Avatar sx={{ width: 50, height: 50, mb: 1 }}>T</Avatar>
-            {open && <Typography variant="body1">Teacher</Typography>}
-            <ListItem button onClick={handleLogout} sx={{ mt: 1, borderRadius: "10px", width: "90%" }}>
-              <ListItemIcon sx={{ color: "red" }}>
-                <LogoutIcon />
-              </ListItemIcon>
-              {open && <ListItemText primary="Logout" sx={{ color: "red" }} />}
-            </ListItem>
-          </Box>
-        </Drawer>
- 
+        <Divider />
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mb: 2 }}>
+          <Avatar sx={{ width: 50, height: 50, mb: 1 }}>T</Avatar>
+          {open && <Typography variant="body1">Teacher</Typography>}
+          <ListItem component="button" onClick={handleLogout} sx={{ mt: 1, borderRadius: "10px", width: "90%" }}>
+
+            <ListItemIcon sx={{ color: "red" }}>
+              <LogoutIcon />
+            </ListItemIcon>
+            {open && <ListItemText primary="Logout" sx={{ color: "red" }} />}
+          </ListItem>
+        </Box>
+      </Drawer>
 
       {/* Main Content */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
-          p: 2,
-          mt: 8,
+          p: 0,
           width: "100%",
           display: "flex",
           justifyContent: "center",
@@ -139,19 +142,13 @@ export default function StudentLayout({ children }) {
         <AppBar
           position="fixed"
           sx={{
-            width: `calc(100% - ${open && !isMobile ? drawerWidth : 0}px)`,
-            marginLeft: open && !isMobile ? `${drawerWidth}px` : "0px",
+            width: `calc(100% - ${open ? drawerWidth : 70}px)`,
+            marginLeft: open ? `${drawerWidth}px` : "70px",
             transition: "width 0.3s ease-in-out, margin 0.3s ease-in-out",
             backgroundColor: "#4a238d",
           }}
         >
           <Toolbar>
-            {isMobile && (
-              <IconButton onClick={() => setOpen(!open)} sx={{ color: "white", mr: 2 }}>
-                <MenuIcon />
-              </IconButton>
-            )}
-
             <Typography variant="h6" sx={{ flexGrow: 1 }}>
               {currentPage}
             </Typography>
@@ -176,8 +173,8 @@ export default function StudentLayout({ children }) {
           </Toolbar>
         </AppBar>
 
-        <Toolbar />
-        <Box sx={{ width: "100%", maxWidth: "1200px", mx: "auto" }}>{children}</Box>
+      
+        <Box sx={{ width: "100%", maxWidth: "1200px", mx: "auto", display:"flex" ,p:2 ,mt:10}}>{children}</Box>
       </Box>
     </Box>
   );

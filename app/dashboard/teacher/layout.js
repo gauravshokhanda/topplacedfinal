@@ -100,7 +100,6 @@ export default function TeacherLayout({ children }) {
         <List sx={{ flexGrow: 1 }}>
           {menuItems.map((item) => (
             <ListItem
-              button
               key={item.text}
               component={Link}
               href={item.path}

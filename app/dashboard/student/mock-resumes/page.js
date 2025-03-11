@@ -1,4 +1,7 @@
+import ResumeUpload from "@/components/ResumeUpload";
+import { Box } from "@mui/material";
+
 export default function TeacherMockResumes() {
-    return <h1>Mock Resumes Section</h1>;
+    return <Box><ResumeUpload/></Box>;
   }
   
