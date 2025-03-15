@@ -52,7 +52,7 @@ export default function LandingPage() {
   return (
     <>
       {/* Header with Navigation Menu */}
-      <AppBar position="static" sx={{ background: "#4a248d" }}>
+      <AppBar position="static" sx={{ background: "#106861" }}>
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: "bold", cursor: "pointer" }} onClick={() => scrollToSection("hero-section")}>
             TopPlaced
@@ -62,7 +62,7 @@ export default function LandingPage() {
           <Button color="inherit" sx={{ fontWeight: "bold" }} onClick={() => scrollToSection("skills-section")}>Skills</Button>
           <Button color="inherit" sx={{ fontWeight: "bold" }} onClick={() => scrollToSection("mentors-section")}>Mentors</Button>
           <Button color="inherit" sx={{ fontWeight: "bold" }} onClick={() => scrollToSection("contact-section")}>Contact</Button>
-          <Button variant="contained" sx={{ ml: 2, background: "white", color: "#4a248d", fontWeight: "bold" }}
+          <Button variant="contained" sx={{ ml: 2, background: "white", color: "#106861", fontWeight: "bold" }}
           //  onClick={() => router.push("/register")}
            >
             Get Started
@@ -71,13 +71,15 @@ export default function LandingPage() {
       </AppBar>
 
       {/* Hero Section */}
-      <Box id="hero-section" sx={{ background: "linear-gradient(to right, rgb(176, 180, 188), rgb(228, 228, 228))", color: "black", textAlign: "center", py: 12 }}>
+      {/* #106861
+      linear-gradient(to right, rgb(176, 180, 188), rgb(228, 228, 228)) */}
+      <Box id="hero-section" sx={{ background: "  #106861", color: "black", textAlign: "center", py: 12 }}>
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-          <Typography variant="h2" fontWeight={700}>Perfect Your Interviews & Get Hired!</Typography>
-          <Typography variant="h6" sx={{ mt: 2, maxWidth: "600px", mx: "auto" }}>
+          <Typography variant="h2" color="white" fontWeight={700}>Perfect Your Interviews & Get Hired!</Typography>
+          <Typography variant="h6" color="white" sx={{ mt: 2, maxWidth: "600px", mx: "auto" }}>
             Take <strong>mock interviews</strong>, receive a <strong>performance scorecard</strong>, and improve with expert feedback.
           </Typography>
-          <Button variant="contained" sx={{ mt: 3, background: "#4a248d", color: "white", fontWeight: "bold", px: 4, py: 1.5 }} onClick={() => scrollToSection("how-it-works")}>
+          <Button variant="contained" sx={{ mt: 3, background: "white", color: "#106861", fontWeight: "bold", px: 4, py: 1.5 }} onClick={() => scrollToSection("how-it-works")}>
             Get Started
           </Button>
         </motion.div>
@@ -85,14 +87,14 @@ export default function LandingPage() {
 
       {/* How It Works Section */}
       <Container id="how-it-works" sx={{ textAlign: "center", mt: 10 }}>
-        <Typography variant="h4" fontWeight={700} color="#4a248d">How It Works</Typography>
+        <Typography variant="h4" fontWeight={700} color="#106861">How It Works</Typography>
         <Grid container spacing={4} sx={{ mt: 6 }}>
           {steps.map((step, index) => (
             <Grid item xs={12} sm={6} md={4} key={index}>
-              <Card sx={{ p: 3, textAlign: "center", boxShadow: 3, background: "#F5F5F5" }}>
+              <Card sx={{ p: 3, textAlign: "center", boxShadow: 3, background: "#106861" }}>
                 <CardContent>
-                  <Typography variant="h5" fontWeight={600}>{step.title}</Typography>
-                  <Typography variant="body1" sx={{ mt: 1 }}>{step.description}</Typography>
+                  <Typography variant="h5" color="white" fontWeight={600}>{step.title}</Typography>
+                  <Typography variant="body1" color="white" sx={{ mt: 1 }}>{step.description}</Typography>
                 </CardContent>
               </Card>
             </Grid>
@@ -102,7 +104,7 @@ export default function LandingPage() {
 
       {/* Skills Section */}
       <Container id="skills-section" sx={{ textAlign: "center", mt: 10 }}>
-        <Typography variant="h4" fontWeight={700} color="#4a248d">Enhance Your Skills</Typography>
+        <Typography variant="h4" fontWeight={700} color="#106861">Enhance Your Skills</Typography>
         <Typography variant="body1" sx={{ mt: 2, mb: 4, maxWidth: "600px", mx: "auto" }}>
           Master the essential fields to excel in your career.
         </Typography>
@@ -110,10 +112,10 @@ export default function LandingPage() {
           {skills.map((skill, index) => (
             <Grid item xs={12} sm={6} md={4} key={index}>
               <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.3 }}>
-                <Card sx={{ p: 3, textAlign: "center", boxShadow: 4, background: "#fff" }}>
+                <Card sx={{ p: 3, textAlign: "center", boxShadow: 4, background: "#106861" }}>
                   <CardContent>
-                    <Typography variant="h6" fontWeight={600}>{skill.name}</Typography>
-                    <Typography variant="body2" sx={{ mt: 1 }}>{skill.description}</Typography>
+                    <Typography variant="h6" color="white" fontWeight={600}>{skill.name}</Typography>
+                    <Typography variant="body2" color="white" sx={{ mt: 1 }}>{skill.description}</Typography>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -124,7 +126,7 @@ export default function LandingPage() {
 
       {/* Mentor Section */}
       <Container id="mentors-section" sx={{ mt: 8, textAlign: "center" }}>
-        <Typography variant="h4" fontWeight={700} color="#4a248d">Meet Our Mentors</Typography>
+        <Typography variant="h4" fontWeight={700} color="#106861">Meet Our Mentors</Typography>
         <Swiper
           effect="coverflow"
           grabCursor={true}
@@ -159,12 +161,12 @@ export default function LandingPage() {
     mt: 8, 
     mb: 8, 
     p: 4, 
-    background: "linear-gradient(135deg, #f5f7fa, #c3cfe2)", 
+    background: "#106861", 
     borderRadius: 2 
   }}
 >
-  <Typography variant="h4" fontWeight={700} color="#4a248d">Get In Touch</Typography>
-  <Box sx={{ display: "flex", justifyContent: "center", gap: 4, mt: 4 }}>
+  <Typography variant="h4" fontWeight={700} color="white">Get In Touch</Typography>
+  {/* <Box sx={{ display: "flex", justifyContent: "center", gap: 4, mt: 4 }}>
     <Card sx={{ p: 4, width: "300px", boxShadow: 3, background: "#F5F5F5" }}>
       <Typography variant="h6">Need Guidance?</Typography>
       <Typography variant="body2">Reach out to our mentors for career support.</Typography>
@@ -173,16 +175,27 @@ export default function LandingPage() {
       <Typography variant="h6">Enroll in Mock Interviews</Typography>
       <Typography variant="body2">Start your interview prep today.</Typography>
     </Card>
-  </Box>
+  </Box> */}
   <Box component="form" sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, mt: 4 }}>
-    <TextField label="Your Name" variant="outlined" fullWidth sx={{ maxWidth: "400px" }} />
-    <TextField label="Your Email" variant="outlined" fullWidth sx={{ maxWidth: "400px" }} />
+  <TextField
+  label="Your Name"
+  variant="outlined"
+  fullWidth
+  sx={{ backgroundColor: "white", maxWidth: "400px" }}
+/>
+<TextField
+  label="Your Email"
+  variant="outlined"
+  fullWidth
+  sx={{ backgroundColor: "white", maxWidth: "400px" }}
+/>
+
     <TextareaAutosize 
       minRows={4} 
       placeholder="Your Message" 
       style={{ width: "400px", padding: "10px", borderRadius: "5px", borderColor: "#ccc" }} 
     />
-    <Button variant="contained" sx={{ background: "#4a248d", color: "white", fontWeight: "bold", px: 4 }}>
+    <Button variant="contained" sx={{ background: "#ffffff", color: "#106861", fontWeight: "bold", px: 4 }}>
       Submit
     </Button>
   </Box>
