@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-  "node": ">=20"
-},
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -32,8 +32,10 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@typescript-eslint/parser": "^8.26.1",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
+    "typescript": "^5.8.2",
     "vite": "^6.0.11",
     "vite-plugin-next": "^0.0.1-beta.1"
   }
