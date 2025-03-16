@@ -1,13 +1,31 @@
 "use client";
-import { AppBar, Toolbar, Typography, Button, Container, Card, CardContent, Grid, Box, TextField, TextareaAutosize, List, ListItem, ListItemText } from "@mui/material";
+import { AppBar, Toolbar, Typography, Button, Container,Drawer, Card, CardContent, Grid,Select,MenuItem, Box, TextField, TextareaAutosize, List, ListItem, ListItemText, IconButton } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import MenuIcon from "@mui/icons-material/Menu";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { EffectCoverflow, Autoplay, Pagination } from "swiper/modules";
+import emailjs from "@emailjs/browser";
+import { useState } from "react";
+import Link from "next/link";
 
 export default function LandingPage() {
   const router = useRouter();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [interviewTime, setInterviewTime] = useState("");
+  const [selectedField, setSelectedField] = useState("");
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const fields = [
+    "Data Analyst",
+    "Business Analyst",
+    "Full Stack Development",
+    "Mobile Development"
+  ];
+
 
   const scrollToSection = (id) => {
     const section = document.getElementById(id);
@@ -16,8 +34,9 @@ export default function LandingPage() {
     }
   };
   const toggleDrawer = (open) => (event) => {
-    // Ignore tab or shift key events to prevent unwanted toggling
-    if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) return;
+    if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
+      return;
+    }
     setDrawerOpen(open);
   };
 
@@ -28,6 +47,31 @@ export default function LandingPage() {
     { label: "Mentors", id: "mentors-section" },
     { label: "Contact", id: "contact-section" },
   ];
+
+  const handleScheduleInterview = (e) => {
+    e.preventDefault();
+    
+     
+    const templateParams = {
+      name: name,
+      user_email: email,
+      mobile: mobile,
+      interview_time: interviewTime,
+      selected_field: selectedField,
+      message: `Interview scheduled for ${interviewTime} in ${selectedField}`
+    };
+
+
+    emailjs.send("service_v6d74tp", "template_84dljhv", templateParams, "092jVXMJK7cGcoq0Q")
+      .then((response) => {
+        alert("Interview Scheduled! Check your email for confirmation.");
+        setEmail("");
+        setInterviewTime("");
+      })
+      .catch((error) => {
+        alert("Failed to schedule interview. Please try again.");
+      });
+  };
 
   const drawer = (
     <Box
@@ -54,22 +98,41 @@ export default function LandingPage() {
       {/* Header with Navigation Menu */}
       <AppBar position="static" sx={{ background: "#106861" }}>
         <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: "bold", cursor: "pointer" }} onClick={() => scrollToSection("hero-section")}>
-            TopPlaced
-          </Typography>
-          <Button color="inherit" sx={{ fontWeight: "bold" }} onClick={() => scrollToSection("features-section")}>Features</Button>
-          <Button color="inherit" sx={{ fontWeight: "bold" }} onClick={() => scrollToSection("how-it-works")}>How It Works</Button>
-          <Button color="inherit" sx={{ fontWeight: "bold" }} onClick={() => scrollToSection("skills-section")}>Skills</Button>
-          <Button color="inherit" sx={{ fontWeight: "bold" }} onClick={() => scrollToSection("mentors-section")}>Mentors</Button>
-          <Button color="inherit" sx={{ fontWeight: "bold" }} onClick={() => scrollToSection("contact-section")}>Contact</Button>
-          <Button variant="contained" sx={{ ml: 2, background: "white", color: "#106861", fontWeight: "bold" }}
-          //  onClick={() => router.push("/register")}
-           >
-            Get Started
-          </Button>
+          {/* Logo */}
+          <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: "bold", cursor: "pointer" }} onClick={() => scrollToSection("hero-section")}>TopPlaced</Typography>
+          
+          {/* Desktop Menu */}
+          <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
+            {navItems.map((item) => (
+              <Button key={item.label} color="inherit" sx={{ fontWeight: "bold" }} onClick={() => scrollToSection(item.id)}>
+                {item.label}
+              </Button>
+            ))}
+            <Button variant="contained" sx={{ background: "white", color: "#106861", fontWeight: "bold" }} onClick={() => router.push("/register")}>Get Started</Button>
+          </Box>
+          
+          {/* Mobile Menu Button */}
+          <IconButton edge="end" color="inherit" aria-label="menu" sx={{ display: { xs: "block", md: "none" } }} onClick={toggleDrawer(true)}>
+            <MenuIcon />
+          </IconButton>
         </Toolbar>
       </AppBar>
 
+      {/* Sidebar Drawer */}
+      <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
+        <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)} onKeyDown={toggleDrawer(false)}>
+          <List>
+            {navItems.map((item) => (
+              <ListItem button key={item.label} onClick={() => scrollToSection(item.id)}>
+                <ListItemText primary={item.label} />
+              </ListItem>
+            ))}
+            <ListItem button key="Get Started" onClick={() => router.push("/register")}> 
+              <ListItemText primary="Get Started" />
+            </ListItem>
+          </List>
+        </Box>
+      </Drawer>
       {/* Hero Section */}
       {/* #106861
       linear-gradient(to right, rgb(176, 180, 188), rgb(228, 228, 228)) */}
@@ -125,7 +188,7 @@ export default function LandingPage() {
       </Container>
 
       {/* Mentor Section */}
-      <Container id="mentors-section" sx={{ mt: 8, textAlign: "center" }}>
+      {/* <Container id="mentors-section" sx={{ mt: 8, textAlign: "center" }}>
         <Typography variant="h4" fontWeight={700} color="#106861">Meet Our Mentors</Typography>
         <Swiper
           effect="coverflow"
@@ -151,56 +214,98 @@ export default function LandingPage() {
             </SwiperSlide>
           ))}
         </Swiper>
+      </Container> */}
+
+       {/* Schedule an Interview Section */}
+       <Container id="schedule-interview" sx={{ textAlign: "center", mt: 8, p: 4, background: "#106861", borderRadius: 2 }}>
+        <Typography variant="h4" fontWeight={700} color="white">Schedule an Interview</Typography>
+        <Box component="form" sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, mt: 4 }} onSubmit={handleScheduleInterview}>
+          <TextField
+            label="Your Name"
+            variant="outlined"
+            fullWidth
+            sx={{ backgroundColor: "white", maxWidth: "400px" }}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+          <TextField
+            label="Your Email"
+            variant="outlined"
+            fullWidth
+            sx={{ backgroundColor: "white", maxWidth: "400px" }}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <TextField
+            label="Mobile Number"
+            variant="outlined"
+            fullWidth
+            sx={{ backgroundColor: "white", maxWidth: "400px" }}
+            value={mobile}
+            onChange={(e) => setMobile(e.target.value)}
+            required
+          />
+          <Select
+            value={selectedField}
+            onChange={(e) => setSelectedField(e.target.value)}
+            displayEmpty
+            fullWidth
+            sx={{ backgroundColor: "white", maxWidth: "400px" }}
+            required
+          >
+            <MenuItem value="" disabled>Select Your Field</MenuItem>
+            {fields.map((field, index) => (
+              <MenuItem key={index} value={field}>{field}</MenuItem>
+            ))}
+          </Select>
+          <TextField
+            label="Interview Time"
+            type="datetime-local"
+            variant="outlined"
+            fullWidth
+            sx={{ backgroundColor: "white", maxWidth: "400px" }}
+            value={interviewTime}
+            onChange={(e) => setInterviewTime(e.target.value)}
+            required
+          />
+          <Button type="submit" variant="contained" sx={{ background: "#ffffff", color: "#106861", fontWeight: "bold", px: 4 }}>
+            Schedule Interview
+          </Button>
+        </Box>
       </Container>
 
+
       {/* Contact Section */}
-      <Container 
-  id="contact-section" 
-  sx={{ 
-    textAlign: "center", 
-    mt: 8, 
-    mb: 8, 
-    p: 4, 
-    background: "#106861", 
-    borderRadius: 2 
-  }}
->
-  <Typography variant="h4" fontWeight={700} color="white">Get In Touch</Typography>
-  {/* <Box sx={{ display: "flex", justifyContent: "center", gap: 4, mt: 4 }}>
-    <Card sx={{ p: 4, width: "300px", boxShadow: 3, background: "#F5F5F5" }}>
-      <Typography variant="h6">Need Guidance?</Typography>
-      <Typography variant="body2">Reach out to our mentors for career support.</Typography>
-    </Card>
-    <Card sx={{ p: 4, width: "300px", boxShadow: 3, background: "#F5F5F5" }}>
-      <Typography variant="h6">Enroll in Mock Interviews</Typography>
-      <Typography variant="body2">Start your interview prep today.</Typography>
-    </Card>
-  </Box> */}
-  <Box component="form" sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, mt: 4 }}>
-  <TextField
-  label="Your Name"
-  variant="outlined"
-  fullWidth
-  sx={{ backgroundColor: "white", maxWidth: "400px" }}
-/>
-<TextField
-  label="Your Email"
-  variant="outlined"
-  fullWidth
-  sx={{ backgroundColor: "white", maxWidth: "400px" }}
-/>
+      
+   
 
-    <TextareaAutosize 
-      minRows={4} 
-      placeholder="Your Message" 
-      style={{ width: "400px", padding: "10px", borderRadius: "5px", borderColor: "#ccc" }} 
-    />
-    <Button variant="contained" sx={{ background: "#ffffff", color: "#106861", fontWeight: "bold", px: 4 }}>
-      Submit
-    </Button>
-  </Box>
-</Container>
-
+ {/* Footer Section */}
+ <Box sx={{ background: "#106861", color: "white", py: 4, mt: 5 }}>
+        <Container>
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={4}>
+              <Typography variant="h6" fontWeight="bold">TopPlaced</Typography>
+              <Typography variant="body2">Helping you ace your interviews with expert guidance.</Typography>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Typography variant="h6" fontWeight="bold">Quick Links</Typography>
+              {navItems.map((item) => (
+                <Typography key={item.label}>
+                  <Link href={`#${item.id}`} color="white" underline="none">{item.label}</Link>
+                </Typography>
+              ))}
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Typography variant="h6" fontWeight="bold">Contact Us</Typography>
+              <Typography variant="body2">Email: topplaced18@gmail.com</Typography>
+              <Typography variant="body2">Phone: +91 701 768 2436</Typography>
+              <Typography variant="body2">Address: Sector 62 Noida , Uttarpardesh</Typography>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
     </>
   );
 }
