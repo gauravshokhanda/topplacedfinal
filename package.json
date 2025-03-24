@@ -29,7 +29,7 @@
     "react-big-calendar": "^1.17.1",
     "react-dom": "^19.0.0",
     "react-dropzone": "^14.3.5",
-    "swiper": "^11.2.2"
+    "swiper": "^11.2.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
