@@ -232,16 +232,6 @@ export default function MockInterviewPage() {
                   ))}
                 </Box>
 
-                {/* Timezone Selection */}
-                <Typography variant="subtitle2" sx={{ color: "#666" }}>Timezone</Typography>
-                <Select
-                  value={timezone}
-                  onChange={(e) => setTimezone(e.target.value)}
-                  fullWidth
-                  sx={{ mb: 1, borderRadius: "10px", "& .MuiOutlinedInput-root": { py: 0.5 } }}
-                >
-                  <MenuItem value="(GMT+5:30) IST">(GMT+5:30) IST</MenuItem>
-                </Select>
 
                 {/* Field Selection */}
                 <Typography variant="subtitle2" sx={{ color: "#666" }}>Your Field</Typography>
