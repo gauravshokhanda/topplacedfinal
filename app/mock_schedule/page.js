@@ -6,16 +6,17 @@ import { useState } from "react";
 import StarIcon from "@mui/icons-material/Star";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
-import Header from "../../components/Header"; // Correct import
+import Header from "../../components/Header";
+import LoginPopup from "../../components/LoginPopup";
 
 export default function MockInterviewPage() {
   const [selectedDate, setSelectedDate] = useState("26 Mar");
-  const [selectedTime, setSelectedTime] = useState("11:00 AM");
-  const [timezone, setTimezone] = useState("(GMT+5:30) IST");
+  const [selectedTime, setSelectedTime] = useState("10:00 AM");
   const [field, setField] = useState("");
   const [email, setEmail] = useState("");
   const [whatsappNumber, setWhatsappNumber] = useState("");
   const [name, setName] = useState("");
+  const [loginOpen, setLoginOpen] = useState(false);
 
   // Generate 7 days from today (March 26, 2025)
   const today = new Date("2025-03-26");
@@ -37,6 +38,10 @@ export default function MockInterviewPage() {
       avatar: "https://randomuser.me/api/portraits/women/44.jpg",
     },
   ];
+
+  const handleConfirmClick = () => {
+    setLoginOpen(true); // Open popup when confirm button is clicked
+  };
 
   return (
     <Box
@@ -212,7 +217,7 @@ export default function MockInterviewPage() {
                 {/* Time Selection */}
                 <Typography variant="subtitle2" sx={{ color: "#666" }}>Select Time</Typography>
                 <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 1 }}>
-                  {["11:00 AM", "11:45 AM", "12:30 PM", "03:30 PM"].map((time) => (
+                  {["10:00 AM", "11:45 AM", "01:00 PM", "03:30 PM"].map((time) => (
                     <Button
                       key={time}
                       variant={selectedTime === time ? "contained" : "outlined"}
@@ -284,6 +289,7 @@ export default function MockInterviewPage() {
                 <Button
                   variant="contained"
                   fullWidth
+                  onClick={handleConfirmClick}
                   sx={{
                     backgroundColor: "#000",
                     color: "#fff",
@@ -301,6 +307,10 @@ export default function MockInterviewPage() {
           </Grid>
         </Grid>
       </Box>
+      <LoginPopup 
+        open={loginOpen} 
+        onClose={() => setLoginOpen(false)} 
+      />
     </Box>
   );
 }
