@@ -2,29 +2,19 @@
 "use client";
 
 import { Card, CardContent, Grid, Select, MenuItem, Box, TextField, Button, Typography, Avatar, IconButton } from "@mui/material";
-import { useState } from "react";
 import StarIcon from "@mui/icons-material/Star";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
 import Header from "../../components/Header";
-import LoginPopup from "../../components/LoginPopup";
+import MockInterviewSection from "../../components/MockInterviewSection" 
+import { ToastContainer } from "react-toastify";
+
+
 
 export default function MockInterviewPage() {
-  const [selectedDate, setSelectedDate] = useState("26 Mar");
-  const [selectedTime, setSelectedTime] = useState("10:00 AM");
-  const [field, setField] = useState("");
-  const [email, setEmail] = useState("");
-  const [whatsappNumber, setWhatsappNumber] = useState("");
-  const [name, setName] = useState("");
-  const [loginOpen, setLoginOpen] = useState(false);
 
-  // Generate 7 days from today (March 26, 2025)
-  const today = new Date("2025-03-26");
-  const dates = Array.from({ length: 7 }, (_, i) => {
-    const date = new Date(today);
-    date.setDate(today.getDate() + i);
-    return date.toLocaleDateString("en-GB", { day: "2-digit", month: "short" });
-  });
+
+
 
   const testimonials = [
     {
@@ -39,16 +29,18 @@ export default function MockInterviewPage() {
     },
   ];
 
-  const handleConfirmClick = () => {
-    setLoginOpen(true); // Open popup when confirm button is clicked
-  };
+
+
+  
+  
+
 
   return (
     <Box
       sx={{
         backgroundColor: "#0A6E6E",
-        height: "100vh",
-        overflow: "hidden",
+        minHeight: "100vh",
+        overflow: "auto",
         display: "flex",
         flexDirection: "column",
       }}
@@ -56,8 +48,10 @@ export default function MockInterviewPage() {
       {/* Navbar */}
       <Header />
 
+      <ToastContainer position="top-right" autoClose={3000} />
+
       {/* Main Content */}
-      <Box sx={{ flexGrow: 1, overflow: "hidden", p: 2 }}>
+      <Box sx={{ flexGrow: 1, overflow: "hidden", p: 2,minWidth:"100%" }}>
         <Grid container spacing={2} sx={{ height: "100%", width: "100%" }}>
           {/* Left Section: Interview Details and Testimonials */}
           <Grid item xs={12} md={6} sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
@@ -170,141 +164,7 @@ export default function MockInterviewPage() {
           </Grid>
 
           {/* Right Section: Scheduling Form */}
-          <Grid item xs={12} md={6} sx={{ height: "100%" }}>
-            <Card
-              sx={{
-                borderRadius: 3,
-                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                height: "100%",
-                overflow: "hidden",
-              }}
-            >
-              <CardContent
-                sx={{
-                  height: "100%",
-                  overflowY: "auto",
-                  p: 2,
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 1,
-                }}
-              >
-                <Typography variant="h5" sx={{ fontWeight: "bold", color: "#333", mb: 1 }}>WHEN should we meet?</Typography>
-
-                {/* Date Selection */}
-                <Typography variant="subtitle2" sx={{ color: "#666" }}>Select Date</Typography>
-                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 1 }}>
-                  {dates.map((date) => (
-                    <Button
-                      key={date}
-                      variant={selectedDate === date ? "contained" : "outlined"}
-                      onClick={() => setSelectedDate(date)}
-                      sx={{
-                        minWidth: "70px",
-                        borderRadius: "20px",
-                        textTransform: "none",
-                        backgroundColor: selectedDate === date ? "#0A6E6E" : "transparent",
-                        color: selectedDate === date ? "#fff" : "#333",
-                        "&:hover": { backgroundColor: selectedDate === date ? "#085858" : "#f0f0f0" },
-                        py: 0.5,
-                      }}
-                    >
-                      {date}
-                    </Button>
-                  ))}
-                </Box>
-
-                {/* Time Selection */}
-                <Typography variant="subtitle2" sx={{ color: "#666" }}>Select Time</Typography>
-                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 1 }}>
-                  {["10:00 AM", "11:45 AM", "01:00 PM", "03:30 PM"].map((time) => (
-                    <Button
-                      key={time}
-                      variant={selectedTime === time ? "contained" : "outlined"}
-                      onClick={() => setSelectedTime(time)}
-                      sx={{
-                        minWidth: "70px",
-                        borderRadius: "20px",
-                        textTransform: "none",
-                        backgroundColor: selectedTime === time ? "#0A6E6E" : "transparent",
-                        color: selectedTime === time ? "#fff" : "#333",
-                        "&:hover": { backgroundColor: selectedTime === time ? "#085858" : "#f0f0f0" },
-                        py: 0.5,
-                      }}
-                    >
-                      {time}
-                    </Button>
-                  ))}
-                </Box>
-
-
-                {/* Field Selection */}
-                <Typography variant="subtitle2" sx={{ color: "#666" }}>Your Field</Typography>
-                <Select
-                  value={field}
-                  onChange={(e) => setField(e.target.value)}
-                  fullWidth
-                  displayEmpty
-                  sx={{ mb: 1, borderRadius: "10px", "& .MuiOutlinedInput-root": { py: 0.5 } }}
-                >
-                  <MenuItem value="" disabled>Select your field</MenuItem>
-                  <MenuItem value="Data Analyst">Data Analyst</MenuItem>
-                  <MenuItem value="Software Engineer">Software Engineer</MenuItem>
-                  <MenuItem value="DevOps">DevOps</MenuItem>
-                </Select>
-
-                {/* Name Field */}
-                <Typography variant="subtitle2" sx={{ color: "#666" }}>Name</Typography>
-                <TextField
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  fullWidth
-                  placeholder="Enter your name"
-                  sx={{ mb: 1, "& .MuiOutlinedInput-root": { borderRadius: "10px", py: 0.5 } }}
-                />
-
-                {/* Email Field */}
-                <Typography variant="subtitle2" sx={{ color: "#666" }}>Email</Typography>
-                <TextField
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  fullWidth
-                  placeholder="Enter your email"
-                  type="email"
-                  sx={{ mb: 1, "& .MuiOutlinedInput-root": { borderRadius: "10px", py: 0.5 } }}
-                />
-
-                {/* WhatsApp Number Field */}
-                <Typography variant="subtitle2" sx={{ color: "#666" }}>WhatsApp Number</Typography>
-                <TextField
-                  value={whatsappNumber}
-                  onChange={(e) => setWhatsappNumber(e.target.value)}
-                  fullWidth
-                  placeholder="Enter your WhatsApp number"
-                  type="tel"
-                  sx={{ mb: 1, "& .MuiOutlinedInput-root": { borderRadius: "10px", py: 0.5 } }}
-                />
-
-                {/* Confirm Button */}
-                <Button
-                  variant="contained"
-                  fullWidth
-                  onClick={handleConfirmClick}
-                  sx={{
-                    backgroundColor: "#000",
-                    color: "#fff",
-                    borderRadius: "10px",
-                    py: 1,
-                    fontWeight: "bold",
-                    textTransform: "none",
-                    "&:hover": { backgroundColor: "#333" },
-                  }}
-                >
-                  CONFIRM DETAILS
-                </Button>
-              </CardContent>
-            </Card>
-          </Grid>
+         <MockInterviewSection/>
         </Grid>
       </Box>
       <LoginPopup 
