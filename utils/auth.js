@@ -1,3 +1,4 @@
+
 export const login = (user) => {
     localStorage.setItem("user", JSON.stringify(user));
   };
@@ -8,10 +9,16 @@ export const login = (user) => {
   };
   
   export const getUser = () => {
-    return JSON.parse(localStorage.getItem("user")) || null;
+    if (typeof window !== "undefined") {
+      return JSON.parse(localStorage.getItem("user")) || null;
+    }
+    return null;
   };
   
   export const isAuthenticated = () => {
-    return !!getUser();
+    if (typeof window !== "undefined") {
+      return !!getUser();
+    }
+    return false;
   };
   

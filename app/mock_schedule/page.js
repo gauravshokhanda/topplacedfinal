@@ -1,14 +1,21 @@
 // app/mock_schedule/page.js
 "use client";
-
+import { useDispatch, useSelector } from "react-redux";
+import { updateInterview } from "../redux/slices/interviewScheduleSlice";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 import { Card, CardContent, Grid, Select, MenuItem, Box, TextField, Button, Typography, Avatar, IconButton } from "@mui/material";
-import { useState } from "react";
+import { useState ,useEffect} from "react";
 import StarIcon from "@mui/icons-material/Star";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
-import Header from "../../components/Header"; // Correct import
+import Header from "../../components/Header"; 
+import { API } from "../config/apiConfig"; // Adjust the import path as needed
+
 
 export default function MockInterviewPage() {
+  const dispatch = useDispatch();
   const [selectedDate, setSelectedDate] = useState("26 Mar");
   const [selectedTime, setSelectedTime] = useState("11:00 AM");
   const [timezone, setTimezone] = useState("(GMT+5:30) IST");
@@ -16,14 +23,19 @@ export default function MockInterviewPage() {
   const [email, setEmail] = useState("");
   const [whatsappNumber, setWhatsappNumber] = useState("");
   const [name, setName] = useState("");
+  const [dates,setDates]=useState([]);
+  const [errors, setErrors] = useState({});
 
   // Generate 7 days from today (March 26, 2025)
-  const today = new Date("2025-03-26");
-  const dates = Array.from({ length: 7 }, (_, i) => {
-    const date = new Date(today);
-    date.setDate(today.getDate() + i);
-    return date.toLocaleDateString("en-GB", { day: "2-digit", month: "short" });
-  });
+  useEffect(() => {
+    const today = new Date("2025-03-26");
+    const newDates = Array.from({ length: 7 }, (_, i) => {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      return date.toLocaleDateString("en-GB", { day: "2-digit", month: "short" });
+    });
+    setDates(newDates);
+  }, []);
 
   const testimonials = [
     {
@@ -38,12 +50,86 @@ export default function MockInterviewPage() {
     },
   ];
 
+
+  const validateForm = () => {
+      let newErrors = {};
+  
+      if (!selectedDate) newErrors.selectedDate = "Please select a date";
+      if (!selectedTime) newErrors.selectedTime = "Please select a time";
+      if (!field) newErrors.field = "Please select your field";
+      if (!name.trim()) newErrors.name = "Name is required";
+      if (!email.trim()) {
+          newErrors.email = "Email is required";
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          newErrors.email = "Enter a valid email";
+      }
+      if (!whatsappNumber.trim()) {
+          newErrors.whatsappNumber = "WhatsApp number is required";
+      } else if (!/^\d{10}$/.test(whatsappNumber)) {
+          newErrors.whatsappNumber = "Enter a valid 10-digit number";
+      }
+  
+      setErrors(newErrors);
+      return Object.keys(newErrors).length === 0;
+  };
+  
+  const convertTo24HourFormat = (time) => {
+    const [timePart, modifier] = time.split(" ");
+    let [hours, minutes] = timePart.split(":").map(Number);
+  
+    if (modifier === "PM" && hours !== 12) {
+      hours += 12;
+    } else if (modifier === "AM" && hours === 12) {
+      hours = 0;
+    }
+  
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+  };
+
+
+
+  const handleSubmit = async () => {
+    if (!validateForm()) return;
+  
+    const interviewData = {
+      selectDate: selectedDate,
+      selectTime: convertTo24HourFormat(selectedTime),
+      yourField: field,
+      name,
+      email,
+      whatsappNumber,
+    };
+  
+    try {
+      const response = await API.post("interviews/", interviewData);
+      
+      console.log("response", response);
+  
+      toast.success("Interview scheduled successfully!");
+  
+      // Reset form fields
+      setSelectedDate("");
+      setSelectedTime("");
+      setField("");
+      setName("");
+      setEmail("");
+      setWhatsappNumber("");
+      setErrors({});
+    } catch (error) {
+      console.error("Error scheduling interview:", error);
+      toast.error(error.response?.data?.message || "Failed to schedule interview");
+    }
+  };
+  
+  
+
+
   return (
     <Box
       sx={{
         backgroundColor: "#0A6E6E",
-        height: "100vh",
-        overflow: "hidden",
+        minHeight: "100vh",
+        overflow: "auto",
         display: "flex",
         flexDirection: "column",
       }}
@@ -51,8 +137,10 @@ export default function MockInterviewPage() {
       {/* Navbar */}
       <Header />
 
+      <ToastContainer position="top-right" autoClose={3000} />
+
       {/* Main Content */}
-      <Box sx={{ flexGrow: 1, overflow: "hidden", p: 2 }}>
+      <Box sx={{ flexGrow: 1, overflow: "hidden", p: 2,minWidth:"100%" }}>
         <Grid container spacing={2} sx={{ height: "100%", width: "100%" }}>
           {/* Left Section: Interview Details and Testimonials */}
           <Grid item xs={12} md={6} sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
@@ -208,6 +296,8 @@ export default function MockInterviewPage() {
                     </Button>
                   ))}
                 </Box>
+                {errors.selectedDate && <Typography sx={{ color: "red", fontSize: "12px" }}>{errors.selectedDate}</Typography>}
+
 
                 {/* Time Selection */}
                 <Typography variant="subtitle2" sx={{ color: "#666" }}>Select Time</Typography>
@@ -231,6 +321,7 @@ export default function MockInterviewPage() {
                     </Button>
                   ))}
                 </Box>
+                {errors.selectedTime && <Typography sx={{ color: "red", fontSize: "12px" }}>{errors.selectedTime}</Typography>}
 
 
                 {/* Field Selection */}
@@ -240,6 +331,7 @@ export default function MockInterviewPage() {
                   onChange={(e) => setField(e.target.value)}
                   fullWidth
                   displayEmpty
+                  error={!!errors.field}
                   sx={{ mb: 1, borderRadius: "10px", "& .MuiOutlinedInput-root": { py: 0.5 } }}
                 >
                   <MenuItem value="" disabled>Select your field</MenuItem>
@@ -247,6 +339,8 @@ export default function MockInterviewPage() {
                   <MenuItem value="Software Engineer">Software Engineer</MenuItem>
                   <MenuItem value="DevOps">DevOps</MenuItem>
                 </Select>
+                {errors.field && <Typography sx={{ color: "red", fontSize: "12px" }}>{errors.field}</Typography>}
+
 
                 {/* Name Field */}
                 <Typography variant="subtitle2" sx={{ color: "#666" }}>Name</Typography>
@@ -255,8 +349,12 @@ export default function MockInterviewPage() {
                   onChange={(e) => setName(e.target.value)}
                   fullWidth
                   placeholder="Enter your name"
+                  error={!!errors.name}
+                  // helperText={!name ? "Name is required" : ""}
                   sx={{ mb: 1, "& .MuiOutlinedInput-root": { borderRadius: "10px", py: 0.5 } }}
                 />
+                  {errors.name && <Typography sx={{ color: "red", fontSize: "12px" }}>{errors.name}</Typography>}
+
 
                 {/* Email Field */}
                 <Typography variant="subtitle2" sx={{ color: "#666" }}>Email</Typography>
@@ -266,8 +364,11 @@ export default function MockInterviewPage() {
                   fullWidth
                   placeholder="Enter your email"
                   type="email"
+                  error={!!errors.email}
                   sx={{ mb: 1, "& .MuiOutlinedInput-root": { borderRadius: "10px", py: 0.5 } }}
                 />
+                  {errors.email && <Typography sx={{ color: "red", fontSize: "12px" }}>{errors.email}</Typography>}
+
 
                 {/* WhatsApp Number Field */}
                 <Typography variant="subtitle2" sx={{ color: "#666" }}>WhatsApp Number</Typography>
@@ -277,8 +378,11 @@ export default function MockInterviewPage() {
                   fullWidth
                   placeholder="Enter your WhatsApp number"
                   type="tel"
+                  error={!!errors.whatsappNumber}
                   sx={{ mb: 1, "& .MuiOutlinedInput-root": { borderRadius: "10px", py: 0.5 } }}
                 />
+                  {errors.whatsappNumber && <Typography sx={{ color: "red", fontSize: "12px" }}>{errors.whatsappNumber}</Typography>}
+
 
                 {/* Confirm Button */}
                 <Button
@@ -293,7 +397,7 @@ export default function MockInterviewPage() {
                     textTransform: "none",
                     "&:hover": { backgroundColor: "#333" },
                   }}
-                >
+                  onClick={handleSubmit}                >
                   CONFIRM DETAILS
                 </Button>
               </CardContent>
