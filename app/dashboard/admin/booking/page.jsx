@@ -67,7 +67,7 @@ export default function TeacherBooking() {
     const fetchInterviews = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('http://localhost:5100/api/interviews/', {
+        const response = await axios.get('https://api.topplaced.com//api/interviews/', {
           params: {
             page: page + 1,
             limit: rowsPerPage,
@@ -111,7 +111,7 @@ export default function TeacherBooking() {
     if (!selectedInterview || !newTime) return;
 
     try {
-      const response = await axios.put(`http://localhost:5100/api/interviews/${selectedInterview._id}`, {
+      const response = await axios.put(`https://api.topplaced.com//api/interviews/${selectedInterview._id}`, {
         selectTime: newTime,
       });
       
