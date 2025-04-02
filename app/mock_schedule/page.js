@@ -167,6 +167,10 @@ export default function MockInterviewPage() {
          <MockInterviewSection/>
         </Grid>
       </Box>
+      <LoginPopup 
+        open={loginOpen} 
+        onClose={() => setLoginOpen(false)} 
+      />
     </Box>
   );
 }
