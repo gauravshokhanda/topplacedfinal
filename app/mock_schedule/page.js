@@ -8,6 +8,7 @@ import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
 import Header from "../../components/Header";
 import MockInterviewSection from "../../components/MockInterviewSection" 
 import { ToastContainer } from "react-toastify";
+// import LoginPopup from "../../components/LoginPopup.js";
 
 
 
@@ -167,10 +168,10 @@ export default function MockInterviewPage() {
          <MockInterviewSection/>
         </Grid>
       </Box>
-      <LoginPopup 
+      {/* <LoginPopup 
         open={loginOpen} 
         onClose={() => setLoginOpen(false)} 
-      />
+      /> */}
     </Box>
   );
 }
