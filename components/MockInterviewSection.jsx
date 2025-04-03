@@ -17,30 +17,22 @@ const MockInterviewSection = () => {
   const [email, setEmail] = useState("");
   const [whatsappNumber, setWhatsappNumber] = useState("");
   const [name, setName] = useState("");
-  const [dates, setDates] = useState([]);
-  const [isoDates, setIsoDates] = useState({});
-  const [availableTimes, setAvailableTimes] = useState([]);
+  const [slots, setSlots] = useState([]); // Store full slots data
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
 
-  // Function to fetch available dates
+  // Function to fetch available dates and slots
   const fetchAvailableDates = async () => {
     setLoading(true);
     try {
       const response = await API.get("interviews/available/week");
-      const weekData = response.data.slots.filter((slot) => slot.isAvailable);
-      const dateList = weekData.map((slot) => slot.date);
-      const isoDateMap = weekData.reduce((acc, slot) => {
-        acc[slot.date] = slot.isoDate;
-        return acc;
-      }, {});
-      setDates(dateList);
-      setIsoDates(isoDateMap);
-      if (dateList.length > 0) {
-        setSelectedDate(dateList[0]); // Set the first available date as default
+      const availableSlots = response.data.slots.filter((slot) => slot.isAvailable && slot.availableTimes.length > 0);
+      setSlots(availableSlots);
+      if (availableSlots.length > 0) {
+        setSelectedDate(availableSlots[0].date); // Set the first available date as default
       } else {
-        setSelectedDate(""); // Reset if no dates are available
+        setSelectedDate(""); // Reset if no slots are available
       }
     } catch (error) {
       console.error("Error fetching available dates:", error);
@@ -55,44 +47,29 @@ const MockInterviewSection = () => {
     fetchAvailableDates();
   }, []);
 
-  // Fetch available times for the selected date and filter out unavailable dates
+  // Update available times when selectedDate changes
   useEffect(() => {
-    if (!selectedDate) return;
+    if (!selectedDate) {
+      setAvailableTimes([]);
+      setSelectedTime("");
+      return;
+    }
 
-    const fetchAvailableTimes = async () => {
-      setLoading(true);
-      try {
-        const isoDate = isoDates[selectedDate];
-        const response = await API.get(`interviews/available/date/${isoDate}`);
-        const times = response.data.availableTimes.map((time) => {
-          const [hours, minutes] = time.split(":");
-          const hourNum = parseInt(hours, 10);
-          const period = hourNum >= 12 ? "PM" : "AM";
-          const adjustedHour = hourNum % 12 || 12;
-          return `${adjustedHour}:${minutes} ${period}`;
-        });
-        setAvailableTimes(times);
-        setSelectedTime(times[0] || "");
+    const selectedSlot = slots.find((slot) => slot.date === selectedDate);
+    if (selectedSlot) {
+      const times = selectedSlot.availableTimes.map((time) => {
+        const [hours, minutes] = time.split(":");
+        const hourNum = parseInt(hours, 10);
+        const period = hourNum >= 12 ? "PM" : "AM";
+        const adjustedHour = hourNum % 12 || 12;
+        return `${adjustedHour}:${minutes} ${period}`;
+      });
+      setAvailableTimes(times);
+      setSelectedTime(times[0] || "");
+    }
+  }, [selectedDate, slots]);
 
-        // If no times are available, remove the date and refetch dates
-        if (times.length === 0) {
-          setDates((prevDates) => prevDates.filter((date) => date !== selectedDate));
-          setIsoDates((prevIsoDates) => {
-            const newIsoDates = { ...prevIsoDates };
-            delete newIsoDates[selectedDate];
-            return newIsoDates;
-          });
-          setSelectedDate(dates.length > 1 ? dates[0] : ""); // Set to next available date or reset
-        }
-      } catch (error) {
-        console.error("Error fetching available times:", error);
-        toast.error("Failed to load available times");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchAvailableTimes();
-  }, [selectedDate, isoDates, dates]);
+  const [availableTimes, setAvailableTimes] = useState([]);
 
   const validateForm = () => {
     let newErrors = {};
@@ -132,8 +109,9 @@ const MockInterviewSection = () => {
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
+    const selectedSlot = slots.find((slot) => slot.date === selectedDate);
     const interviewData = {
-      selectDate: isoDates[selectedDate],
+      selectDate: selectedSlot.isoDate,
       selectTime: convertTo24HourFormat(selectedTime),
       yourField: field,
       name,
@@ -197,25 +175,25 @@ const MockInterviewSection = () => {
           <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 1 }}>
             {loading ? (
               <CircularProgress size={24} sx={{ color: "#0A6E6E" }} />
-            ) : dates.length === 0 ? (
+            ) : slots.length === 0 ? (
               <Typography>No available dates</Typography>
             ) : (
-              dates.map((date) => (
+              slots.map((slot) => (
                 <Button
-                  key={date}
-                  variant={selectedDate === date ? "contained" : "outlined"}
-                  onClick={() => setSelectedDate(date)}
+                  key={slot.date}
+                  variant={selectedDate === slot.date ? "contained" : "outlined"}
+                  onClick={() => setSelectedDate(slot.date)}
                   sx={{
                     minWidth: "70px",
                     borderRadius: "20px",
                     textTransform: "none",
-                    backgroundColor: selectedDate === date ? "#0A6E6E" : "transparent",
-                    color: selectedDate === date ? "#fff" : "#333",
-                    "&:hover": { backgroundColor: selectedDate === date ? "#085858" : "#f0f0f0" },
+                    backgroundColor: selectedDate === slot.date ? "#0A6E6E" : "transparent",
+                    color: selectedDate === slot.date ? "#fff" : "#333",
+                    "&:hover": { backgroundColor: selectedDate === slot.date ? "#085858" : "#f0f0f0" },
                     py: 0.5,
                   }}
                 >
-                  {date}
+                  {slot.date}
                 </Button>
               ))
             )}

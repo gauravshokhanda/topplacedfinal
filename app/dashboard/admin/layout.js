@@ -33,7 +33,7 @@ const menuItems = [
   // { text: "Home", path: "/dashboard/admin/home", icon: <HomeIcon /> },
   // { text: "Dashboard", path: "/dashboard/teacher/dashboard", icon: <DashboardIcon /> },
   { text: "Booking", path: "/dashboard/admin/booking", icon: <LibraryBooksIcon /> },
-  // { text: "Mock Resumes", path: "/dashboard/teacher/mock-resumes", icon: <DescriptionIcon /> },
+  { text: "Available Slots", path: "/dashboard/admin/AvailableSlotsManagement", icon: <DescriptionIcon /> },
   // { text: "Job Card", path: "/dashboard/teacher/job-card", icon: <WorkIcon /> },
 ];
 
