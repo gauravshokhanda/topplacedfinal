@@ -6,7 +6,7 @@ import { updateInterview } from "../app/redux/slices/interviewScheduleSlice";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useState, useEffect } from "react";
-import { Card, CardContent, Grid, Select, MenuItem, Box, TextField, Button, Typography } from "@mui/material";
+import { Card, CardContent, Grid, Select, MenuItem, Box, TextField, Button, Typography, CircularProgress } from "@mui/material";
 
 const MockInterviewSection = () => {
   const dispatch = useDispatch();
@@ -18,56 +18,72 @@ const MockInterviewSection = () => {
   const [whatsappNumber, setWhatsappNumber] = useState("");
   const [name, setName] = useState("");
   const [dates, setDates] = useState([]);
-  const [isoDates, setIsoDates] = useState({}); // Store mapping of display date to ISO date
+  const [isoDates, setIsoDates] = useState({});
   const [availableTimes, setAvailableTimes] = useState([]);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
 
-  // Fetch available dates for the week
-  useEffect(() => {
-    const fetchAvailableDates = async () => {
-      setLoading(true);
-      try {
-        const response = await API.get("interviews/available/week");
-        const weekData = response.data.slots.filter((slot) => slot.isAvailable);
-        const dateList = weekData.map((slot) => slot.date);
-        const isoDateMap = weekData.reduce((acc, slot) => {
-          acc[slot.date] = slot.isoDate; // Map "30 Mar" to "2025-03-30"
-          return acc;
-        }, {});
-        setDates(dateList);
-        setIsoDates(isoDateMap);
-        if (dateList.length > 0) {
-          setSelectedDate(dateList[0]); // Set the first available date as default
-        }
-      } catch (error) {
-        console.error("Error fetching available dates:", error);
-        toast.error("Failed to load available dates");
-      } finally {
-        setLoading(false);
+  // Function to fetch available dates
+  const fetchAvailableDates = async () => {
+    setLoading(true);
+    try {
+      const response = await API.get("interviews/available/week");
+      const weekData = response.data.slots.filter((slot) => slot.isAvailable);
+      const dateList = weekData.map((slot) => slot.date);
+      const isoDateMap = weekData.reduce((acc, slot) => {
+        acc[slot.date] = slot.isoDate;
+        return acc;
+      }, {});
+      setDates(dateList);
+      setIsoDates(isoDateMap);
+      if (dateList.length > 0) {
+        setSelectedDate(dateList[0]); // Set the first available date as default
+      } else {
+        setSelectedDate(""); // Reset if no dates are available
       }
-    };
+    } catch (error) {
+      console.error("Error fetching available dates:", error);
+      toast.error("Failed to load available dates");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Initial fetch of available dates
+  useEffect(() => {
     fetchAvailableDates();
   }, []);
 
-  // Fetch available times for the selected date
+  // Fetch available times for the selected date and filter out unavailable dates
   useEffect(() => {
     if (!selectedDate) return;
 
     const fetchAvailableTimes = async () => {
       setLoading(true);
       try {
-        const isoDate = isoDates[selectedDate]; // Get the ISO date for the selected display date
+        const isoDate = isoDates[selectedDate];
         const response = await API.get(`interviews/available/date/${isoDate}`);
         const times = response.data.availableTimes.map((time) => {
           const [hours, minutes] = time.split(":");
           const hourNum = parseInt(hours, 10);
           const period = hourNum >= 12 ? "PM" : "AM";
-          const adjustedHour = hourNum % 12 || 12; // Convert 0 to 12 for 12 AM
+          const adjustedHour = hourNum % 12 || 12;
           return `${adjustedHour}:${minutes} ${period}`;
         });
         setAvailableTimes(times);
-        setSelectedTime(times[0] || ""); // Set the first available time as default
+        setSelectedTime(times[0] || "");
+
+        // If no times are available, remove the date and refetch dates
+        if (times.length === 0) {
+          setDates((prevDates) => prevDates.filter((date) => date !== selectedDate));
+          setIsoDates((prevIsoDates) => {
+            const newIsoDates = { ...prevIsoDates };
+            delete newIsoDates[selectedDate];
+            return newIsoDates;
+          });
+          setSelectedDate(dates.length > 1 ? dates[0] : ""); // Set to next available date or reset
+        }
       } catch (error) {
         console.error("Error fetching available times:", error);
         toast.error("Failed to load available times");
@@ -76,7 +92,7 @@ const MockInterviewSection = () => {
       }
     };
     fetchAvailableTimes();
-  }, [selectedDate, isoDates]);
+  }, [selectedDate, isoDates, dates]);
 
   const validateForm = () => {
     let newErrors = {};
@@ -117,7 +133,7 @@ const MockInterviewSection = () => {
     if (!validateForm()) return;
 
     const interviewData = {
-      selectDate: isoDates[selectedDate], // Use ISO date for submission
+      selectDate: isoDates[selectedDate],
       selectTime: convertTo24HourFormat(selectedTime),
       yourField: field,
       name,
@@ -125,10 +141,13 @@ const MockInterviewSection = () => {
       whatsappNumber,
     };
 
+    setSubmitLoading(true);
     try {
       const response = await API.post("interviews/", interviewData);
       console.log("response", response);
       toast.success("Interview scheduled successfully!");
+      
+      // Reset form fields
       setSelectedDate("");
       setSelectedTime("");
       setField("");
@@ -136,9 +155,14 @@ const MockInterviewSection = () => {
       setEmail("");
       setWhatsappNumber("");
       setErrors({});
+      
+      // Refetch available dates after successful submission
+      await fetchAvailableDates();
     } catch (error) {
       console.error("Error scheduling interview:", error);
       toast.error(error.response?.data?.message || "Failed to schedule interview");
+    } finally {
+      setSubmitLoading(false);
     }
   };
 
@@ -172,7 +196,9 @@ const MockInterviewSection = () => {
           </Typography>
           <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 1 }}>
             {loading ? (
-              <Typography>Loading dates...</Typography>
+              <CircularProgress size={24} sx={{ color: "#0A6E6E" }} />
+            ) : dates.length === 0 ? (
+              <Typography>No available dates</Typography>
             ) : (
               dates.map((date) => (
                 <Button
@@ -204,7 +230,9 @@ const MockInterviewSection = () => {
           </Typography>
           <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 1 }}>
             {loading ? (
-              <Typography>Loading times...</Typography>
+              <CircularProgress size={24} sx={{ color: "#0A6E6E" }} />
+            ) : availableTimes.length === 0 ? (
+              <Typography>No available times</Typography>
             ) : (
               availableTimes.map((time) => (
                 <Button
@@ -303,7 +331,7 @@ const MockInterviewSection = () => {
             <Typography sx={{ color: "red", fontSize: "12px" }}>{errors.whatsappNumber}</Typography>
           )}
 
-          {/* Confirm Button */}
+          {/* Confirm Button with Loading */}
           <Button
             variant="contained"
             fullWidth
@@ -315,11 +343,22 @@ const MockInterviewSection = () => {
               fontWeight: "bold",
               textTransform: "none",
               "&:hover": { backgroundColor: "#333" },
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 1,
             }}
             onClick={handleSubmit}
-            disabled={loading}
+            disabled={loading || submitLoading}
           >
-            CONFIRM DETAILS
+            {submitLoading ? (
+              <>
+                <CircularProgress size={20} sx={{ color: "#fff" }} />
+                <span>Scheduling...</span>
+              </>
+            ) : (
+              "CONFIRM DETAILS"
+            )}
           </Button>
         </CardContent>
       </Card>
