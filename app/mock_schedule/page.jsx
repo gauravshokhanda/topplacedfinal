@@ -1,6 +1,4 @@
-// app/mock_schedule/page.js
 "use client";
-
 import { Card, CardContent, Grid, Select, MenuItem, Box, TextField, Button, Typography, Avatar, IconButton } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
