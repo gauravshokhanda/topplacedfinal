@@ -9,10 +9,7 @@ import {
   TextField,
   Button,
   Box,
-  IconButton,
-  Typography,
 } from '@mui/material';
-import { Add, Remove } from '@mui/icons-material';
 
 const WorkshopForm = ({ open, onClose, onSubmit, initialData = {} }) => {
   const [formData, setFormData] = useState({
@@ -20,7 +17,6 @@ const WorkshopForm = ({ open, onClose, onSubmit, initialData = {} }) => {
     dateTime: '',
     meetingLink: '',
     price: 19.49,
-    whatYoullLearn: [''],
   });
 
   useEffect(() => {
@@ -30,7 +26,6 @@ const WorkshopForm = ({ open, onClose, onSubmit, initialData = {} }) => {
         dateTime: initialData.dateTime ? new Date(initialData.dateTime).toISOString().slice(0, 16) : '',
         meetingLink: initialData.meetingLink || '',
         price: initialData.price || 19.49,
-        whatYoullLearn: initialData.whatYoullLearn?.length > 0 ? initialData.whatYoullLearn : [''],
       });
     }
   }, [initialData]);
@@ -40,34 +35,8 @@ const WorkshopForm = ({ open, onClose, onSubmit, initialData = {} }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleLearnPointChange = (index, value) => {
-    const newLearnPoints = [...formData.whatYoullLearn];
-    newLearnPoints[index] = value;
-    setFormData((prev) => ({ ...prev, whatYoullLearn: newLearnPoints }));
-  };
-
-  const addLearnPoint = () => {
-    setFormData((prev) => ({ ...prev, whatYoullLearn: [...prev.whatYoullLearn, ''] }));
-  };
-
-  const removeLearnPoint = (index) => {
-    if (formData.whatYoullLearn.length > 1) {
-      const newLearnPoints = formData.whatYoullLearn.filter((_, i) => i !== index);
-      setFormData((prev) => ({ ...prev, whatYoullLearn: newLearnPoints }));
-    }
-  };
-
   const handleSubmit = () => {
-    // Ensure whatYoullLearn doesn't include empty strings
-    const cleanedFormData = {
-      ...formData,
-      whatYoullLearn: formData.whatYoullLearn.filter((point) => point.trim() !== ''),
-    };
-    if (cleanedFormData.whatYoullLearn.length === 0) {
-      alert('Please provide at least one learning point.');
-      return;
-    }
-    onSubmit(cleanedFormData);
+    onSubmit(formData);
     onClose();
   };
 
@@ -110,33 +79,7 @@ const WorkshopForm = ({ open, onClose, onSubmit, initialData = {} }) => {
             onChange={handleChange}
             fullWidth
             required
-            inputProps={{ step: '0.01' }}
           />
-          <Box>
-            <Typography variant="subtitle1">What You'll Learn</Typography>
-            {formData.whatYoullLearn.map((point, index) => (
-              <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                <TextField
-                  label={`Learning Point ${index + 1}`}
-                  value={point}
-                  onChange={(e) => handleLearnPointChange(index, e.target.value)}
-                  fullWidth
-                  required
-                />
-                <IconButton
-                  onClick={() => removeLearnPoint(index)}
-                  disabled={formData.whatYoullLearn.length === 1}
-                >
-                  <Remove />
-                </IconButton>
-                {index === formData.whatYoullLearn.length - 1 && (
-                  <IconButton onClick={addLearnPoint}>
-                    <Add />
-                  </IconButton>
-                )}
-              </Box>
-            ))}
-          </Box>
         </Box>
       </DialogContent>
       <DialogActions>
