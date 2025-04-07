@@ -28,18 +28,14 @@ import DescriptionIcon from '@mui/icons-material/Description';
 const drawerWidth = 240;
 
 const menuItems = [
-    { text: "Dashboard", path: "/dashboard/admin", icon: <DashboardIcon /> },
-    { text: "Booking", path: "/dashboard/admin/booking", icon: <LibraryBooksIcon /> },
-    { text: "Workshops", path: "/dashboard/admin/workshops", icon: <LibraryBooksIcon /> },
-    { text: "Students", path: "/dashboard/admin/students", icon: <LibraryBooksIcon /> },
-    { text: "Resumes", path: "/dashboard/admin/resumes", icon: <LibraryBooksIcon /> },
-    { text: "Jobs", path: "/dashboard/admin/jobs", icon: <LibraryBooksIcon /> },
-    { text: "Available Slots", path: "/dashboard/admin/AvailableSlotsManagement", icon: <DescriptionIcon /> },
-    { text: "Participants", path: "/dashboard/admin/Participant", icon: <DashboardIcon /> },
-    { text: "Workshop", path: "/dashboard/admin/Workshop", icon: <WorkIcon /> },
-  ];
-  
-export default function AdminSidebarLayout({ children }) {
+  // { text: "Home", path: "/dashboard/admin/home", icon: <HomeIcon /> },
+  { text: "Participants", path: "/dashboard/admin/Participant", icon: <DashboardIcon /> },
+  { text: "Booking", path: "/dashboard/admin/booking", icon: <LibraryBooksIcon /> },
+  { text: "Available Slots", path: "/dashboard/admin/AvailableSlotsManagement", icon: <AccessTimeIcon  /> },
+  { text: "Workshop", path: "/dashboard/admin/Workshop", icon: <WorkIcon /> },
+];
+
+export default function TeacherLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(true);
