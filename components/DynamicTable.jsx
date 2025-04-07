@@ -39,20 +39,22 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:hover': {
     backgroundColor: '#e0f2e9',
     transition: 'background-color 0.3s ease',
+    cursor: 'pointer', // Add cursor pointer for clickable rows
   },
 }));
 
 const DynamicTable = ({
-  columns, // Array of column definitions
-  data, // Array of data to display
-  loading, // Boolean to show loading state
-  error, // Error message if any
-  totalItems, // Total number of items for pagination
-  rowsPerPageOptions = [5, 10, 25], // Options for rows per page
-  onPageChange, // Callback for page change
-  onRowsPerPageChange, // Callback for rows per page change
-  page, // Current page
-  rowsPerPage, // Rows per page
+  columns,
+  data,
+  loading,
+  error,
+  totalItems,
+  rowsPerPageOptions = [5, 10, 25],
+  onPageChange,
+  onRowsPerPageChange,
+  page,
+  rowsPerPage,
+  onRowClick, // Add onRowClick prop
 }) => {
   if (loading) {
     return (
@@ -90,7 +92,10 @@ const DynamicTable = ({
         </TableHead>
         <TableBody>
           {data.map((row, index) => (
-            <StyledTableRow key={row._id || index}>
+            <StyledTableRow
+              key={row._id || index}
+              onClick={() => onRowClick && onRowClick(row)} // Add onClick handler
+            >
               {columns.map((column) => (
                 <StyledTableCell key={column.id}>
                   {column.render ? column.render(row) : row[column.id]}

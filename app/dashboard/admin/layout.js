@@ -31,10 +31,10 @@ const drawerWidth = 240;
 
 const menuItems = [
   // { text: "Home", path: "/dashboard/admin/home", icon: <HomeIcon /> },
-  // { text: "Dashboard", path: "/dashboard/teacher/dashboard", icon: <DashboardIcon /> },
+  { text: "Participants", path: "/dashboard/admin/Participant", icon: <DashboardIcon /> },
   { text: "Booking", path: "/dashboard/admin/booking", icon: <LibraryBooksIcon /> },
   { text: "Available Slots", path: "/dashboard/admin/AvailableSlotsManagement", icon: <AccessTimeIcon  /> },
-  // { text: "Job Card", path: "/dashboard/teacher/job-card", icon: <WorkIcon /> },
+  { text: "Workshop", path: "/dashboard/admin/Workshop", icon: <WorkIcon /> },
 ];
 
 export default function TeacherLayout({ children }) {
