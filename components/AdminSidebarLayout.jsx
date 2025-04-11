@@ -19,6 +19,8 @@ import {
 } from "@mui/material";
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import WorkIcon from '@mui/icons-material/Work';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -34,6 +36,7 @@ const menuItems = [
     { text: "Jobs", path: "/dashboard/admin/jobs", icon: <LibraryBooksIcon /> },
     { text: "Available Slots", path: "/dashboard/admin/AvailableSlotsManagement", icon: <DescriptionIcon /> },
     { text: "Participants", path: "/dashboard/admin/Participant", icon: <DashboardIcon /> },
+    { text: "Workshop", path: "/dashboard/admin/Workshop", icon: <WorkIcon /> },
   ];
   
 export default function AdminSidebarLayout({ children }) {
