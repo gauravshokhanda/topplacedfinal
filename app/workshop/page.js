@@ -39,6 +39,7 @@ export default function WorkshopRegistrationPage() {
         overflow: "auto",
         display: "flex",
         flexDirection: "column",
+        border:"2px solid red" 
       }}
     >
       <Header />

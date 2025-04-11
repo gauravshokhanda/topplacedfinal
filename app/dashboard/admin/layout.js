@@ -31,7 +31,7 @@ const drawerWidth = 240;
 
 const menuItems = [
   // { text: "Home", path: "/dashboard/admin/home", icon: <HomeIcon /> },
-  { text: "Participants", path: "/dashboard/admin/Participant", icon: <DashboardIcon /> },
+  // { text: "Participants", path: "/dashboard/admin/Participant", icon: <DashboardIcon /> },
   { text: "Booking", path: "/dashboard/admin/booking", icon: <LibraryBooksIcon /> },
   { text: "Available Slots", path: "/dashboard/admin/AvailableSlotsManagement", icon: <AccessTimeIcon  /> },
   { text: "Workshop", path: "/dashboard/admin/Workshop", icon: <WorkIcon /> },

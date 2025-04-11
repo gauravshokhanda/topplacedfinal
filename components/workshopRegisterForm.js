@@ -11,7 +11,7 @@ const WorkshopRegisterForm = () => {
   const [email, setEmail] = useState("");
   const [whatsappNumber, setWhatsappNumber] = useState("");
   const [name, setName] = useState("");
-  const [plan, setPlan] = useState("19"); 
+  const [plan, setPlan] = useState("19");
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -68,24 +68,35 @@ const WorkshopRegisterForm = () => {
   };
 
   return (
-    <Grid item xs={12} md={6} sx={{ height: "100%" }}>
+    <Grid
+      item
+      xs={12}
+      sm={8}
+      md={6}
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: { xs: "flex-start", md: "center" },
+        minHeight: { xs: "auto", md: "100vh" },
+        p: { xs: 2, sm: 3 },
+      }}
+    >
       <Card
         sx={{
           borderRadius: 4,
           boxShadow: "0 6px 20px rgba(0,0,0,0.12)",
-          height: "100%",
-          overflow: "hidden",
+          width: "100%",
+          maxWidth: 500,
           backgroundColor: "#fff",
+          m: "auto",
         }}
       >
         <CardContent
           sx={{
-            height: "100%",
-            overflowY: "auto",
-            p: 3,
+            p: { xs: 2, sm: 3 },
             display: "flex",
             flexDirection: "column",
-            gap: 1,
+            gap: 2,
           }}
         >
           <Typography
@@ -94,29 +105,31 @@ const WorkshopRegisterForm = () => {
               fontWeight: "bold",
               color: "#1A3C34",
               letterSpacing: "0.5px",
-              mb: 1,
+              textAlign: "center",
             }}
           >
             Register for the Workshop
           </Typography>
 
           {/* Static Date and Time */}
-          <Typography variant="subtitle2" sx={{ color: "#666", fontWeight: "medium" }}>
-            Workshop Schedule
-          </Typography>
-          <Typography
-            variant="body1"
-            sx={{
-              color: "#333",
-              fontWeight: "medium",
-              mb: 2,
-              backgroundColor: "#F5F7FA",
-              p: 1,
-              borderRadius: "8px",
-            }}
-          >
-            {workshopDate} at {workshopTime}
-          </Typography>
+          <Box>
+            <Typography variant="subtitle2" sx={{ color: "#666", fontWeight: "medium" }}>
+              Workshop Schedule
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                color: "#333",
+                fontWeight: "medium",
+                backgroundColor: "#F5F7FA",
+                p: 1,
+                borderRadius: "8px",
+                textAlign: "center",
+              }}
+            >
+              {workshopDate} at {workshopTime}
+            </Typography>
+          </Box>
 
           {/* Name Field */}
           <Box>
@@ -194,7 +207,9 @@ const WorkshopRegisterForm = () => {
               }}
             />
             {errors.whatsappNumber && (
-              <Typography sx={{ color: "red", fontSize: "12px", mt: 0.5 }}>{errors.whatsappNumber}</Typography>
+              <Typography sx={{ color: "red", fontSize: "12px", mt: 0.5 }}>
+                {errors.whatsappNumber}
+              </Typography>
             )}
           </Box>
 
@@ -203,14 +218,22 @@ const WorkshopRegisterForm = () => {
             <Typography variant="subtitle2" sx={{ color: "#666", fontWeight: "medium", mb: 1 }}>
               Select Plan
             </Typography>
-            <Box sx={{ display: "flex", gap: 1.5, justifyContent: "center" }}>
+            <Box
+              sx={{
+                display: "flex",
+                gap: 1,
+                justifyContent: "center",
+                flexWrap: "wrap",
+              }}
+            >
               {["19", "49", "99"].map((price) => (
                 <Button
                   key={price}
                   variant={plan === price ? "contained" : "outlined"}
                   onClick={() => setPlan(price)}
                   sx={{
-                    minWidth: "90px",
+                    flex: { xs: "1 1 30%", sm: "0 1 auto" },
+                    minWidth: { xs: "80px", sm: "90px" },
                     borderRadius: "12px",
                     textTransform: "none",
                     fontWeight: "medium",
@@ -242,7 +265,6 @@ const WorkshopRegisterForm = () => {
               fontWeight: "bold",
               textTransform: "none",
               "&:hover": { backgroundColor: "#085858" },
-              mt: 2,
               boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
               transition: "all 0.3s ease",
             }}
