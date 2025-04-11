@@ -180,7 +180,7 @@ export default function AuthPage() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Container>
+    
         {/* Desktop Version with Sliding Animation */}
         <DesktopContainer>
           <WelcomeBox sx={{ transform: isLogin ? 'translateX(0)' : 'translateX(100%)' }}>
@@ -210,7 +210,7 @@ export default function AuthPage() {
             />
           </AuthBox>
         </MobileContainer>
-      </Container>
+      
     </ThemeProvider>
   );
 }
