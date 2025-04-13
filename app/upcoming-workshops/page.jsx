@@ -10,10 +10,12 @@ import {
   CircularProgress,
 } from "@mui/material";
 import dayjs from "dayjs";
+import { useRouter } from "next/navigation";
 
 export default function UpcomingWorkshops() {
-  const [workshops, setWorkshops] = useState([]);
+  const [workshops, setWorkshops] =  useState([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter(); // ✅ Initialize router
 
   useEffect(() => {
     axios
@@ -27,6 +29,11 @@ export default function UpcomingWorkshops() {
         setLoading(false);
       });
   }, []);
+
+  const handleCardClick = (id) => {
+    console.log("Redirecting to workshop with ID:", id);
+    router.push(`/workshop/${id}`);
+  };
 
   return (
     <Container sx={{ mt: 10 }}>
@@ -43,10 +50,16 @@ export default function UpcomingWorkshops() {
           {workshops.map((workshop) => (
             <Grid item xs={12} md={6} key={workshop._id}>
               <Card
+                onClick={() => handleCardClick(workshop._id)} // ✅ Click handler
                 sx={{
                   backgroundColor: "#f9f9f9",
                   p: 2,
                   boxShadow: 3,
+                  cursor: "pointer", // ✅ Better UX
+                  transition: "transform 0.2s",
+                  "&:hover": {
+                    transform: "scale(1.02)",
+                  },
                 }}
               >
                 <CardContent>
