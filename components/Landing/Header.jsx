@@ -75,7 +75,7 @@ export default function Header() {
 
   return (
     <>
-      <AppBar position="static" sx={{ background: "#106861" }}>
+      <AppBar position="static" sx={{ background: "#0A6E6E" }}>
         <Toolbar>
           <Typography
             variant="h6"

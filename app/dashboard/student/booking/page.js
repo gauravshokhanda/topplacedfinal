@@ -1,175 +1,122 @@
-"use client";
+'use client';
 
-import { useState } from "react";
 import {
   Box,
   Typography,
-  Button,
-  Grid,
-  Paper,
   Card,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
-  List,
-  ListItem,
-  ListItemText,
-  TextField,
-  Rating,
-} from "@mui/material";
-import { LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
-import { DateCalendar } from "@mui/x-date-pickers";
-import moment from "moment";
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from '@mui/material';
 
-// Available fields
-const fields = ["Software Engineering", "Data Science", "Product Management", "Cybersecurity", "Cloud Computing"];
+// Static booking data
+const bookings = [
+  {
+    interviewName: 'System Design Mock Interview',
+    mentorName: 'Alice Johnson',
+    dateTime: '2025-05-01 10:00 AM',
+    duration: '1 hour',
+    amountPaid: '$50',
+  },
+  {
+    interviewName: 'Coding Interview Prep',
+    mentorName: 'Michael Smith',
+    dateTime: '2025-05-03 2:00 PM',
+    duration: '45 minutes',
+    amountPaid: '$40',
+  },
+  {
+    interviewName: 'Behavioral Interview Practice',
+    mentorName: 'Sarah Brown',
+    dateTime: '2025-05-05 11:00 AM',
+    duration: '1 hour',
+    amountPaid: '$55',
+  },
+];
 
-// Mock time slots (replace with real API later)
-const timeSlots = {
-  "2025-02-14": ["10:00 AM", "11:30 AM", "2:00 PM"],
-  "2025-02-15": ["9:00 AM", "12:00 PM", "3:30 PM"],
-  "2025-02-16": ["10:00 AM", "1:00 PM", "4:30 PM"],
-};
-
-export default function StudentBooking() {
-  const [selectedField, setSelectedField] = useState("");
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [availableTimes, setAvailableTimes] = useState([]);
-  const [selectedTime, setSelectedTime] = useState(null);
-  const [description, setDescription] = useState("");
-  const [ratings, setRatings] = useState({
-    communication: 3,
-    resume: 3,
-    problemSolving: 3,
-    speaking: 3,
-  });
-
-  // Handle Field Selection
-  const handleFieldChange = (event) => setSelectedField(event.target.value);
-
-  // Handle Date Selection
-  const handleDateSelect = (date) => {
-    const formattedDate = moment(date).format("YYYY-MM-DD");
-    setSelectedDate(formattedDate);
-    setAvailableTimes(timeSlots[formattedDate] || []);
-    setSelectedTime(null);
-  };
-
-  // Handle Time Selection
-  const handleTimeSelect = (time) => setSelectedTime(time);
-
-  // Final Submission
-  const handleSubmit = () => {
-    console.log("Booking Details:", {
-      field: selectedField,
-      date: selectedDate ? moment(selectedDate).format("MMMM Do YYYY") : "Not Selected",
-      time: selectedTime,
-      description,
-      ratings,
-    });
-  };
-
+export default function BookingHistory() {
   return (
-    <Box sx={{ width: "100%", maxWidth: "1100px", mx: "auto", p: 4 }}>
-      <Typography variant="h4" fontWeight="bold" mb={3} textAlign="center">
-        Mock Interview Booking
-      </Typography>
+    <Box
+      sx={{
+        p: { xs: 2, md: 4 },
+        bgcolor: '#f0f4f4',
+        minHeight: '100vh',
+        width: '100%',
+      }}
+    >
+      <Card
+        sx={{
+          maxWidth: '100%',
+          mx: 'auto',
+          p: 4,
+          boxShadow: 6,
+          borderRadius: 4,
+          backgroundColor: '#fff',
+        }}
+      >
+        <Typography
+          variant="h5"
+          fontWeight="bold"
+          color="#0A6E6E"
+          gutterBottom
+        >
+          Booking History
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+          View your past mock interviews and payment records.
+        </Typography>
 
-      <Grid container spacing={4}>
-        {/* Right Side - All Components */}
-        <Grid item xs={12} md={12}>
-          <Card sx={{ p: 4, boxShadow: 5 }}>
-            
-            {/* Section 1: Choose Field */}
-            <Box sx={{ mb: 4 }}>
-              <Typography variant="h5" fontWeight="bold" mb={2}>
-                Select Your Field
-              </Typography>
-              <FormControl fullWidth>
-                <InputLabel>Select Field</InputLabel>
-                <Select value={selectedField} onChange={handleFieldChange}>
-                  {fields.map((field, index) => (
-                    <MenuItem key={index} value={field}>
-                      {field}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
-
-            {/* Section 2: Select Date & Time */}
-            <Box sx={{ mb: 4 }}>
-              <Typography variant="h5" fontWeight="bold" mb={2}>
-                Select Date & Time
-              </Typography>
-              <LocalizationProvider dateAdapter={AdapterMoment}>
-                <Grid container spacing={2}>
-                  <Grid item xs={6}>
-                    <DateCalendar value={moment(selectedDate)} onChange={handleDateSelect} disablePast />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Paper elevation={3} sx={{ p: 2 }}>
-                      <Typography variant="body1" fontWeight="bold">
-                        Available Time Slots
-                      </Typography>
-                      <List>
-                        {availableTimes.length > 0 ? (
-                          availableTimes.map((time, index) => (
-                            <ListItem
-                              key={index}
-                              selected={selectedTime === time}
-                              onClick={() => handleTimeSelect(time)}
-                              sx={{
-                                backgroundColor: selectedTime === time ? "#2575fc" : "transparent",
-                                borderRadius: 1,
-                                "&:hover": { backgroundColor: "#2575fc", color: "white" },
-                              }}
-                            >
-                              <ListItemText primary={time} />
-                            </ListItem>
-                          ))
-                        ) : (
-                          <Typography>No available slots.</Typography>
-                        )}
-                      </List>
-                    </Paper>
-                  </Grid>
-                </Grid>
-              </LocalizationProvider>
-            </Box>
-
-            {/* Section 3: Add Description */}
-            <Box sx={{ mb: 4 }}>
-              <Typography variant="h5" fontWeight="bold" mb={2}>
-                Add a Description
-              </Typography>
-              <TextField fullWidth multiline rows={4} placeholder="Enter any specific requests..." value={description} onChange={(e) => setDescription(e.target.value)} />
-            </Box>
-
-            {/* Section 4: Self-Rating */}
-            <Box sx={{ mb: 4 }}>
-              <Typography variant="h5" fontWeight="bold" mb={2}>
-                Rate Yourself
-              </Typography>
-              {Object.keys(ratings).map((category) => (
-                <Box key={category} sx={{ mb: 2 }}>
-                  <Typography>{category.replace(/([A-Z])/g, " $1")}</Typography>
-                  <Rating value={ratings[category]} onChange={(e, newValue) => setRatings({ ...ratings, [category]: newValue })} />
-                </Box>
+        <TableContainer
+          component={Paper}
+          sx={{ borderRadius: 2, overflow: 'hidden', boxShadow: 3 }}
+        >
+          <Table aria-label="booking history table">
+            <TableHead sx={{ backgroundColor: '#0A6E6E' }}>
+              <TableRow>
+                <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>
+                  Interview Name
+                </TableCell>
+                <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>
+                  Mentor
+                </TableCell>
+                <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>
+                  Date & Time
+                </TableCell>
+                <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>
+                  Duration
+                </TableCell>
+                <TableCell sx={{ color: '#fff', fontWeight: 'bold' }}>
+                  Amount Paid
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {bookings.map((booking, index) => (
+                <TableRow
+                  key={index}
+                  sx={{
+                    backgroundColor: index % 2 === 0 ? '#f9f9f9' : '#ffffff',
+                    transition: '0.2s',
+                    '&:hover': {
+                      backgroundColor: '#e1f4f4',
+                    },
+                  }}
+                >
+                  <TableCell>{booking.interviewName}</TableCell>
+                  <TableCell>{booking.mentorName}</TableCell>
+                  <TableCell>{booking.dateTime}</TableCell>
+                  <TableCell>{booking.duration}</TableCell>
+                  <TableCell>{booking.amountPaid}</TableCell>
+                </TableRow>
               ))}
-            </Box>
-
-            {/* Submit Button */}
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-              <Button variant="contained" color="success" onClick={handleSubmit}>
-                Confirm Booking
-              </Button>
-            </Box>
-          </Card>
-        </Grid>
-      </Grid>
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Card>
     </Box>
   );
 }

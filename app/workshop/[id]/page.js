@@ -4,19 +4,16 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import axios from "axios";
 import {
+  Box,
+  Grid,
+  Typography,
   Card,
   CardContent,
-  Grid,
-  Box,
-  Typography,
-  Avatar,
   CircularProgress,
 } from "@mui/material";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import Header from "../../../components/Header";
-import WorkshopRegisterForm from "../../../components/workshopRegisterForm";
 import { ToastContainer } from "react-toastify";
 import dayjs from "dayjs";
+import WorkshopRegisterForm from "../../../components/workshopRegisterForm";
 
 export default function WorkshopRegistrationPage() {
   const { id } = useParams();
@@ -68,110 +65,84 @@ export default function WorkshopRegistrationPage() {
       sx={{
         backgroundColor: "#0A6E6E",
         minHeight: "100vh",
-        overflow: "auto",
-        display: "flex",
-        flexDirection: "column",
+        color: "#fff",
+        py: 4,
       }}
     >
-      {/* <Header /> */}
       <ToastContainer position="top-right" autoClose={3000} />
-      <Box sx={{ flexGrow: 1, overflow: "hidden", p: 2, minWidth: "100%" }}>
-        <Grid container spacing={2}>
-          {/* Left Section */}
-          <Grid item xs={12} md={6}>
-            <Card
+      <Grid container spacing={4} justifyContent="center" px={3}>
+        {/* Left Section */}
+        <Grid item xs={12} md={6}>
+          {/* Workshop Title Section */}
+          <Box
+            sx={{ backgroundColor: "#D3F1F1", p: 3, borderRadius: 3, mb: 4 }}
+          >
+            <Typography
+              variant="h5"
               sx={{
-                borderRadius: 3,
-                backgroundColor: "#E6F0FA",
-                p: 3,
-                mb: 2,
-                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                fontWeight: "bold",
+                textAlign: "center",
+                color: "#0A6E6E",
               }}
             >
-              <CardContent sx={{ p: 0, display: "flex", flexDirection: "column", gap: 2 }}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Typography
-                    variant="h5"
-                    sx={{ fontWeight: "bold", color: "#1A3C34" }}
-                  >
-                    {workshop.workshopName}
-                  </Typography>
-                  <Avatar
-                    src="https://randomuser.me/api/portraits/women/65.jpg"
-                    alt={workshop.workshopName}
-                    sx={{
-                      width: 60,
-                      height: 60,
-                      border: "2px solid #fff",
-                      boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-                    }}
-                  />
-                </Box>
-                <Typography variant="h6" sx={{ color: "#2E7D7D", fontStyle: "italic" }}>
-                  Learn and grow your skills with us!
-                </Typography>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <CalendarTodayIcon sx={{ color: "#1A3C34", fontSize: "20px" }} />
-                  <Typography variant="body1" sx={{ color: "#1A3C34" }}>
-                    {dayjs(workshop.dateTime).format("DD MMM YYYY | hh:mm A")} IST
-                  </Typography>
-                </Box>
-              </CardContent>
-            </Card>
-
-            <Typography variant="h5" sx={{ fontWeight: "bold", color: "#fff", mb: 2 }}>
-              WHAT YOU'LL LEARN
+              {workshop.workshopName}
             </Typography>
-            <Box
+            <Typography
               sx={{
-                display: "flex",
-                gap: 2,
-                overflowX: "auto",
-                pb: 2,
-                scrollbarWidth: "none",
-                "&::-webkit-scrollbar": {
-                  display: "none",
-                },
-                msOverflowStyle: "none",
+                mt: 2,
+                textAlign: "center",
+                color: "#1B3B3B",
               }}
             >
-              {workshop.whatYoullLearn.map((point, index) => (
-                <Card
-                  key={index}
-                  sx={{
-                    minWidth: "300px",
-                    p: 3,
-                    borderRadius: 3,
-                    backgroundColor: "#fff",
-                    boxShadow: "0 4px 15px rgba(0,0,0,0.15)",
-                  }}
-                >
-                  <CardContent>
-                    <Typography
-                      variant="subtitle1"
-                      sx={{ fontWeight: "bold", color: "#0A6E6E", mb: 1 }}
-                    >
-                      Topic {index + 1}
-                    </Typography>
-                    <Typography variant="body1" sx={{ color: "#444" }}>
-                      {point}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              ))}
-            </Box>
-          </Grid>
+              Join us for a powerful session on building a standout resume and
+              optimizing your LinkedIn profile. Learn how to structure your
+              resume, showcase achievements, and tailor it for any role.
+            </Typography>
+          </Box>
 
-          {/* Right Section */}
-          <WorkshopRegisterForm />
+          {/* What You'll Learn */}
+          <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
+            WHAT YOU’LL LEARN
+          </Typography>
+          <Card sx={{ backgroundColor: "#fff", borderRadius: 3, p: 2, mb: 4 }}>
+            <CardContent>
+              <ul style={{ color: "#0A6E6E", paddingLeft: 20 }}>
+                {workshop.whatYoullLearn.map((item, index) => (
+                  <li key={index} style={{ marginBottom: 10 }}>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Testimonials */}
+          <Grid container spacing={2}>
+            {["Zal ul Nabi Baig", "Sourabh Samanta", "Sourabh Samanta"].map(
+              (name, i) => (
+                <Grid item xs={12} md={4} key={i}>
+                  <Card sx={{ backgroundColor: "#fff", borderRadius: 2, p: 2 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: "#0A6E6E", mb: 1 }}
+                    >
+                      The session was highly informative, and I got all of my
+                      queries solved.
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: "#888" }}>
+                      {name} <br /> Mar 2025
+                    </Typography>
+                  </Card>
+                </Grid>
+              )
+            )}
+          </Grid>
         </Grid>
-      </Box>
+
+     
+    <WorkshopRegisterForm />
+
+      </Grid>
     </Box>
   );
 }

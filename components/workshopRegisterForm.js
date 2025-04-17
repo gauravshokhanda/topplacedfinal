@@ -111,25 +111,7 @@ const WorkshopRegisterForm = () => {
             Register for the Workshop
           </Typography>
 
-          {/* Static Date and Time */}
-          <Box>
-            <Typography variant="subtitle2" sx={{ color: "#666", fontWeight: "medium" }}>
-              Workshop Schedule
-            </Typography>
-            <Typography
-              variant="body1"
-              sx={{
-                color: "#333",
-                fontWeight: "medium",
-                backgroundColor: "#F5F7FA",
-                p: 1,
-                borderRadius: "8px",
-                textAlign: "center",
-              }}
-            >
-              {workshopDate} at {workshopTime}
-            </Typography>
-          </Box>
+          
 
           {/* Name Field */}
           <Box>
