@@ -40,7 +40,7 @@ const menuItems = [
   { text: "Home", path: "/dashboard/student/home", icon: <HomeIcon /> },
   // { text: "Find People", path: "/dashboard/student/find-mentor", icon: <DashboardIcon /> },
   { text: "Booking", path: "/dashboard/student/booking", icon: <LibraryBooksIcon /> },
-  { text: "Mock Resumes", path: "/dashboard/student/mock-resumes", icon: <DescriptionIcon /> },
+  // { text: "Mock Resumes", path: "/dashboard/student/mock-resumes", icon: <DescriptionIcon /> },
   { text: "Job Card", path: "/dashboard/student/job-card", icon: <WorkIcon /> },
   { text: "Profile", path: "/dashboard/student/profile", icon: <AssignmentIndIcon /> },
 ];
@@ -67,7 +67,7 @@ export default function StudentLayout({ children }) {
       <Drawer
         variant="permanent"
         sx={{
-          width: open ? drawerWidth : 70,
+          width: open ? drawerWidth : 790,
           flexShrink: 0,
           "& .MuiDrawer-paper": {
             width: open ? drawerWidth : 70,
@@ -79,7 +79,7 @@ export default function StudentLayout({ children }) {
           },
         }}
       >
-        <Toolbar sx={{ display: "flex", justifyContent: open ? "space-between" : "center", alignItems: "center", backgroundColor: "#4a238d" }}>
+        <Toolbar sx={{ display: "flex", justifyContent: open ? "space-between" : "center", alignItems: "center", backgroundColor: "#0A6E6E" }}>
           {open && <Typography variant="h6" color="white">Top Placed</Typography>}
           <IconButton onClick={() => setOpen(!open)} sx={{ color: "white" }}>
             {open ? <ChevronLeftIcon /> : <MenuIcon />}
@@ -95,11 +95,11 @@ export default function StudentLayout({ children }) {
   href={item.path}
   selected={pathname === item.path}
   sx={{
-    backgroundColor: pathname === item.path ? "#4a238d" : "transparent",
+    backgroundColor: pathname === item.path ? "#0A6E6E" : "transparent",
     color: pathname === item.path ? "white" : "inherit",
     borderRadius: "10px",
     "&:hover": {
-      backgroundColor: "#4a238d",
+      backgroundColor: "#0A6E6E",
       color: "white",
     },
     cursor: "pointer", // Ensure it's clickable
@@ -145,7 +145,7 @@ export default function StudentLayout({ children }) {
             width: `calc(100% - ${open ? drawerWidth : 70}px)`,
             marginLeft: open ? `${drawerWidth}px` : "70px",
             transition: "width 0.3s ease-in-out, margin 0.3s ease-in-out",
-            backgroundColor: "#4a238d",
+            backgroundColor: "#0A6E6E",
           }}
         >
           <Toolbar>
