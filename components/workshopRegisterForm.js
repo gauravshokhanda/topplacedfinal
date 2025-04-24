@@ -7,10 +7,10 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Card, CardContent, Grid, Box, TextField, Button, Typography } from "@mui/material";
 
-const WorkshopRegisterForm = () => {
+const WorkshopRegisterForm = ({workshopId }) => {
   const [email, setEmail] = useState("");
-  const [whatsappNumber, setWhatsappNumber] = useState("");
-  const [name, setName] = useState("");
+  const [whatsapp, setwhatsapp] = useState("");
+  const [fullName, setfullName] = useState("");
   const [plan, setPlan] = useState("19");
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -21,16 +21,16 @@ const WorkshopRegisterForm = () => {
   const validateForm = () => {
     let newErrors = {};
 
-    if (!name.trim()) newErrors.name = "Name is required";
+    if (!fullName.trim()) newErrors.fullName = "fullName is required";
     if (!email.trim()) {
       newErrors.email = "Email is required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       newErrors.email = "Enter a valid email";
     }
-    if (!whatsappNumber.trim()) {
-      newErrors.whatsappNumber = "WhatsApp number is required";
-    } else if (!/^\d{10}$/.test(whatsappNumber)) {
-      newErrors.whatsappNumber = "Enter a valid 10-digit number";
+    if (!whatsapp.trim()) {
+      newErrors.whatsapp = "WhatsApp number is required";
+    } else if (!/^\d{10}$/.test(whatsapp)) {
+      newErrors.whatsapp = "Enter a valid 10-digit number";
     }
 
     setErrors(newErrors);
@@ -39,24 +39,27 @@ const WorkshopRegisterForm = () => {
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
-
+    
     const registrationData = {
-      name,
+      fullName,
       email,
-      whatsappNumber,
+      whatsapp,
       plan,
       workshopDate,
       workshopTime,
+      workshopId,
     };
+    console.log(registrationData);
+
 
     setLoading(true);
     try {
-      const response = await API.post("workshop/register", registrationData);
+      const response = await API.post("workshops/register", registrationData);
       console.log("response", response);
       toast.success("Workshop registration successful!");
-      setName("");
+      setfullName("");
       setEmail("");
-      setWhatsappNumber("");
+      setwhatsapp("");
       setPlan("19");
       setErrors({});
     } catch (error) {
@@ -113,17 +116,17 @@ const WorkshopRegisterForm = () => {
 
           
 
-          {/* Name Field */}
+          {/* fullName Field */}
           <Box>
             <Typography variant="subtitle2" sx={{ color: "#666", fontWeight: "medium", mb: 0.5 }}>
-              Name
+              fullName
             </Typography>
             <TextField
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={fullName}
+              onChange={(e) => setfullName(e.target.value)}
               fullWidth
-              placeholder="Enter your name"
-              error={!!errors.name}
+              placeholder="Enter your fullName"
+              error={!!errors.fullName}
               sx={{
                 "& .MuiOutlinedInput-root": {
                   borderRadius: "12px",
@@ -134,8 +137,8 @@ const WorkshopRegisterForm = () => {
                 },
               }}
             />
-            {errors.name && (
-              <Typography sx={{ color: "red", fontSize: "12px", mt: 0.5 }}>{errors.name}</Typography>
+            {errors.fullName && (
+              <Typography sx={{ color: "red", fontSize: "12px", mt: 0.5 }}>{errors.fullName}</Typography>
             )}
           </Box>
 
@@ -172,12 +175,12 @@ const WorkshopRegisterForm = () => {
               WhatsApp Number
             </Typography>
             <TextField
-              value={whatsappNumber}
-              onChange={(e) => setWhatsappNumber(e.target.value)}
+              value={whatsapp}
+              onChange={(e) => setwhatsapp(e.target.value)}
               fullWidth
               placeholder="Enter your WhatsApp number"
               type="tel"
-              error={!!errors.whatsappNumber}
+              error={!!errors.whatsapp}
               sx={{
                 "& .MuiOutlinedInput-root": {
                   borderRadius: "12px",
@@ -188,9 +191,9 @@ const WorkshopRegisterForm = () => {
                 },
               }}
             />
-            {errors.whatsappNumber && (
+            {errors.whatsapp && (
               <Typography sx={{ color: "red", fontSize: "12px", mt: 0.5 }}>
-                {errors.whatsappNumber}
+                {errors.whatsapp}
               </Typography>
             )}
           </Box>

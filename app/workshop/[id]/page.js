@@ -140,7 +140,7 @@ export default function WorkshopRegistrationPage() {
         </Grid>
 
      
-    <WorkshopRegisterForm />
+    <WorkshopRegisterForm workshopId={id}  />
 
       </Grid>
     </Box>
