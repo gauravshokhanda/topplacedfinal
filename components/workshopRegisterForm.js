@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Card, CardContent, Grid, Box, TextField, Button, Typography } from "@mui/material";
 
-const WorkshopRegisterForm = ({workshopId }) => {
+const WorkshopRegisterForm = ({ workshopId }) => {
   const [email, setEmail] = useState("");
   const [whatsapp, setwhatsapp] = useState("");
   const [fullName, setfullName] = useState("");
@@ -37,38 +37,97 @@ const WorkshopRegisterForm = ({workshopId }) => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      if (window.Razorpay) return resolve(true);
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+  
   const handleSubmit = async () => {
     if (!validateForm()) return;
-    
+  
     const registrationData = {
       fullName,
       email,
       whatsapp,
-      plan,
-      workshopDate,
-      workshopTime,
       workshopId,
     };
-    console.log(registrationData);
-
-
+  
     setLoading(true);
     try {
-      const response = await API.post("workshops/register", registrationData);
-      console.log("response", response);
-      toast.success("Workshop registration successful!");
-      setfullName("");
-      setEmail("");
-      setwhatsapp("");
-      setPlan("19");
-      setErrors({});
+      // Step 1: Call backend to create Razorpay order
+      const { data } = await API.post("workshops/register", registrationData);
+      const { order, participantInfo } = data;
+  
+      // Step 2: Load Razorpay script dynamically
+      const isScriptLoaded = await loadRazorpayScript();
+      if (!isScriptLoaded) {
+        toast.error("Failed to load Razorpay. Please try again.");
+        return;
+      }
+  
+      // Step 3: Prepare Razorpay options
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID, // from .env.local
+        amount: order.amount,
+        currency: order.currency,
+        name: "TopPlaced Workshop",
+        description: "Workshop Registration Fee",
+        order_id: order.id,
+        handler: async function (response) {
+          try {
+            const confirmData = {
+              fullName: participantInfo.fullName,
+              email: participantInfo.email,
+              whatsapp: participantInfo.whatsapp,
+              workshopId: participantInfo.workshopId,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            };
+  
+            await API.post("workshops/confirm-registration", confirmData);
+            toast.success("Payment successful! You are registered.");
+  
+            // Clear form
+            setfullName("");
+            setEmail("");
+            setwhatsapp("");
+            setPlan("19");
+            setErrors({});
+          } catch (err) {
+            console.error("Error confirming registration:", err);
+            toast.error("Payment was successful, but registration failed.");
+          }
+        },
+        prefill: {
+          name: participantInfo.fullName,
+          email: participantInfo.email,
+          contact: participantInfo.whatsapp,
+        },
+        theme: {
+          color: "#0A6E6E",
+        },
+      };
+  
+      // Step 4: Open Razorpay payment popup
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+  
     } catch (error) {
       console.error("Error registering for workshop:", error);
-      toast.error(error.response?.data?.message || "Failed to register for workshop");
+      toast.error(error.response?.data?.message || "Failed to initiate registration");
     } finally {
       setLoading(false);
     }
   };
+  
+
 
   return (
     <Grid
@@ -114,7 +173,7 @@ const WorkshopRegisterForm = ({workshopId }) => {
             Register for the Workshop
           </Typography>
 
-          
+
 
           {/* fullName Field */}
           <Box>
