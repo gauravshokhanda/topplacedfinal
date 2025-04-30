@@ -11,7 +11,7 @@ const studentAuthSlice = createSlice({
   initialState,
   reducers: {
     loginSuccess: (state, action) => {
-        console.log("🟢 loginSuccess dispatched with payload:", action.payload); 
+        // console.log("🟢 loginSuccess dispatched with payload:", action.payload); 
       state.user = {
         name: action.payload.name,
         email: action.payload.email,

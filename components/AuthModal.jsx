@@ -13,7 +13,8 @@ export default function AuthModal({ open, onClose }) {
         >
           <CloseIcon />
         </IconButton>
-        <AuthForm /> {/* Your auth form JSX here */}
+        <AuthForm isLogin={true} toggleAuth={() => {}} onClose={onClose} />
+
       </DialogContent>
     </Dialog>
   );

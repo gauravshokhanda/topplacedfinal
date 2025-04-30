@@ -1,21 +1,23 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Typography,
   TextField,
   Button,
   Paper,
-  Divider,
+  FormControlLabel,
+  Checkbox,
+  CircularProgress
 } from "@mui/material";
 import { styled, ThemeProvider, createTheme } from "@mui/material/styles";
-import GoogleIcon from "@mui/icons-material/Google";
-import axios from "axios";
 import { API } from "@/app/config/apiConfig";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess } from "@/redux/slices/studentAuthSlice";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useRouter } from "next/navigation";
 
-// Enhanced Theme configuration
 const theme = createTheme({
   palette: {
     primary: { main: "#0A6E6E" },
@@ -39,20 +41,8 @@ const theme = createTheme({
         },
       },
     },
-   
   },
 });
-
-// Styled components
-const Container = styled(Box)(({ theme }) => ({
-  minHeight: "100vh",
-  width: "100%",
-  background: "linear-gradient(145deg, #F5F7FA 0%, #C3CFE2 100%)",
-  padding: theme.spacing(8),
-  [theme.breakpoints.down("md")]: {
-    padding: theme.spacing(4),
-  },
-}));
 
 const DesktopContainer = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -61,7 +51,6 @@ const DesktopContainer = styled(Box)(({ theme }) => ({
   margin: "0 auto",
   borderRadius: 16,
   overflow: "hidden",
-  // boxShadow: "0 12px 40px rgba(0, 0, 0, 0.1)",
   [theme.breakpoints.down("md")]: {
     display: "none",
   },
@@ -91,7 +80,6 @@ const FormBox = styled(Paper)(({ theme }) => ({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-  // backgroundColor: "#FFFFFF",
   transition: "transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1)",
   paddingTop: theme.spacing(7),
 }));
@@ -101,8 +89,7 @@ const AuthBox = styled(Paper)(({ theme }) => ({
   maxWidth: "420px",
   margin: "0 auto",
   padding: theme.spacing(5),
-  paddingTop: theme.spacing(7), 
-  // backgroundColor: "#FFFFFF",
+  paddingTop: theme.spacing(7),
   borderRadius: 12,
   boxShadow: "0 8px 32px rgba(0, 0, 0, 0.08)",
 }));
@@ -110,7 +97,7 @@ const AuthBox = styled(Paper)(({ theme }) => ({
 const FormContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
-  gap: theme.spacing(2), // Kept reduced space between inputs
+  gap: theme.spacing(2),
 }));
 
 const StyledButton = styled(Button)(({ theme }) => ({
@@ -122,101 +109,158 @@ const StyledButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-const AuthForm = ({ isLogin, toggleAuth, handleGoogleLogin }) => {
-
+const AuthForm = ({ isLogin, toggleAuth, onClose }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [isTeacher, setIsTeacher] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
+  const router = useRouter();
+
+  const validate = () => {
+    const errs = {};
+    if (!email) errs.email = "Email is required";
+    if (!password) errs.password = "Password is required";
+    if (!isLogin && !fullName) errs.fullName = "Full name is required";
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
 
   const handleSubmit = async () => {
-    if (isLogin) {
-      try {
-        const response = await API.post("auth/login", {
-          email,
-          password,
-        });
-        console.log("Login Success:", response.data);
+    if (!validate()) return;
+    const role = isTeacher ? "Teacher" : "Student";
+    setLoading(true);
+    try {
+      if (isLogin) {
+        const response = await API.post("auth/login", { email, password });
+        // console.log("response", response.data);
         dispatch(loginSuccess(response.data));
-      } catch (error) {
-        console.error("Login Failed:", error.response?.data || error.message);
-      }
-    } else {
-      try {
+        toast.success("Logged in successfully");
+        console.log("onClose is:", onClose);
+        
+        const userRole = response.data?.role;
+        // console.log("userRole", userRole);
+        if (userRole === "Teacher") {
+          router.push("/teacher");
+        } else {
+          router.push("/student");
+        }
+      } else {
         const response = await API.post("auth/register", {
           name: fullName,
           email,
+
           password,
+          role,
         });
-        console.log("Register Success:", response.data);
-      } catch (error) {
-        console.error("Register Failed:", error.response?.data || error.message);
+        
+        console.log("registered data", response.data);
+        dispatch(loginSuccess(response.data));
+        onClose?.();
+        toast.success("Registered successfully");
+        const userRole = response.data?.role;
+        if (userRole === "Teacher") {
+          router.push("/teacher");
+        } else {
+          router.push("/student");
+        }
       }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
-  
-  return (
 
-  <FormContainer>
-    <Typography variant="h5" color="primary">
-      {isLogin ? "Sign In" : "Sign Up"}
-    </Typography>
-    {!isLogin && (
+
+  const user = useSelector((state) => state.studentAuth.user);
+  useEffect(() => {
+    if (user) {
+      const userRole = user.role || "Student";
+      if (userRole === "Teacher") {
+        router.push("/teacher");
+      } else {
+        router.push("/student");
+      }
+    }
+  })
+
+  return (
+    <FormContainer>
+      <Typography variant="h5" color="primary">
+        {isLogin ? "Sign In" : "Sign Up"}
+      </Typography>
+      {!isLogin && (
+        <TextField
+          label="Full Name"
+          variant="outlined"
+          fullWidth
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+          error={!!errors.fullName}
+          helperText={errors.fullName}
+        />
+      )}
       <TextField
-        label="Full Name"
+        label="Email"
         variant="outlined"
         fullWidth
-        autoComplete="name"
-        value={fullName}
-        onChange={(e) => setFullName(e.target.value)}
-      />
-    )}
-    <TextField
-      label="Email"
-      variant="outlined"
-      fullWidth
-      autoComplete="email"
-      value={email}
+        value={email}
         onChange={(e) => setEmail(e.target.value)}
-    />
-    <TextField
-      label="Password"
-      type="password"
-      variant="outlined"
-      fullWidth
-      autoComplete={isLogin ? "current-password" : "new-password"}
-      value={password}
-      onChange={(e) => setPassword(e.target.value)}
-    />
-    <StyledButton variant="contained" color="primary" fullWidth  onClick={handleSubmit}>
-      {isLogin ? "Sign In" : "Sign Up"}
-    </StyledButton>
-
-    <Typography
-      variant="body2"
-      sx={{ textAlign: "center", color: "text.secondary" }}
-    >
-      {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
-      <Button
+        error={!!errors.email}
+        helperText={errors.email}
+      />
+      <TextField
+        label="Password"
+        type="password"
+        variant="outlined"
+        fullWidth
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        error={!!errors.password}
+        helperText={errors.password}
+      />
+      {!isLogin && (
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={isTeacher}
+              onChange={(e) => setIsTeacher(e.target.checked)}
+              color="primary"
+            />
+          }
+          label="Sign up as Teacher"
+        />
+      )}
+      <StyledButton
+        variant="contained"
         color="primary"
-        onClick={toggleAuth}
-        sx={{ fontWeight: 500, textTransform: "none" }}
+        fullWidth
+        onClick={handleSubmit}
+        disabled={loading}
       >
-        {isLogin ? "Sign Up" : "Sign In"}
-      </Button>
-    </Typography>
-  </FormContainer>
+        {loading ? <CircularProgress size={24} color="inherit" /> : isLogin ? "Sign In" : "Sign Up"}
+      </StyledButton>
+      <Typography variant="body2" sx={{ textAlign: "center", color: "text.secondary" }}>
+        {isLogin ? "Don't have an account?" : "Already have an account?"} {" "}
+        <Button color="primary" onClick={toggleAuth} sx={{ fontWeight: 500, textTransform: "none" }}>
+          {isLogin ? "Sign Up" : "Sign In"}
+        </Button>
+      </Typography>
+    </FormContainer>
   );
 };
 
-export default function AuthPage() {
+export default function AuthPage(onClose) {
   const [isLogin, setIsLogin] = useState(true);
   const toggleAuth = () => setIsLogin((prev) => !prev);
-  const handleGoogleLogin = () => console.log("Google login clicked");
 
   return (
     <ThemeProvider theme={theme}>
-      {/* Desktop Version with Sliding Animation */}
+      <ToastContainer position="top-right" autoClose={3000} />
       <DesktopContainer>
         <WelcomeBox
           sx={{
@@ -227,10 +271,7 @@ export default function AuthPage() {
           <Typography variant="h3" gutterBottom>
             {isLogin ? "Welcome Back!" : "Join Us!"}
           </Typography>
-          <Typography
-            variant="body1"
-            sx={{ textAlign: "center", maxWidth: "80%" }}
-          >
+          <Typography variant="body1" sx={{ textAlign: "center", maxWidth: "80%" }}>
             {isLogin
               ? "Sign in to continue your journey with us"
               : "Create an account to start exploring"}
@@ -242,22 +283,14 @@ export default function AuthPage() {
             transform: isLogin ? "translateX(0)" : "translateX(-100%)",
           }}
         >
-          <AuthForm
-            isLogin={isLogin}
-            toggleAuth={toggleAuth}
-            handleGoogleLogin={handleGoogleLogin}
-          />
+          <AuthBox>
+            <AuthForm isLogin={isLogin} toggleAuth={toggleAuth}  onClose={onClose}/>
+          </AuthBox>
         </FormBox>
       </DesktopContainer>
-
-      {/* Mobile/Tablet Version without Animation */}
       <MobileContainer>
         <AuthBox>
-          <AuthForm
-            isLogin={isLogin}
-            toggleAuth={toggleAuth}
-            handleGoogleLogin={handleGoogleLogin}
-          />
+          <AuthForm isLogin={isLogin} toggleAuth={toggleAuth}  onClose={onClose}/>
         </AuthBox>
       </MobileContainer>
     </ThemeProvider>

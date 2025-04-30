@@ -56,7 +56,9 @@ const WorkshopRegisterForm = ({ workshopId }) => {
       email,
       whatsapp,
       workshopId,
+      payment: Number(plan), // send the selected plan to backend
     };
+    
   
     setLoading(true);
     try {
@@ -70,14 +72,13 @@ const WorkshopRegisterForm = ({ workshopId }) => {
         toast.error("Failed to load Razorpay. Please try again.");
         return;
       }
-  
-      // Step 3: Prepare Razorpay options
+
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID, // from .env.local
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: order.amount,
         currency: order.currency,
         name: "TopPlaced Workshop",
-        description: "Workshop Registration Fee",
+        description: `Workshop Plan - ₹${plan}`,
         order_id: order.id,
         handler: async function (response) {
           try {
@@ -93,8 +94,6 @@ const WorkshopRegisterForm = ({ workshopId }) => {
   
             await API.post("workshops/confirm-registration", confirmData);
             toast.success("Payment successful! You are registered.");
-  
-            // Clear form
             setfullName("");
             setEmail("");
             setwhatsapp("");

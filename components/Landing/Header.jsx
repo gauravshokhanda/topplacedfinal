@@ -12,10 +12,11 @@ import {
   ListItemText,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { useState } from "react";
+import { use, useState,useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import AuthModal from "@/components/AuthModal"; // Make sure this exists
+import { useSelector } from "react-redux";
 
 const navItems = [
   { label: "How It Works", id: "how-it-works" },
@@ -23,11 +24,26 @@ const navItems = [
   { label: "Workshops", path: "/upcoming-workshops" },
 ];
 
+
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [openAuthModal, setOpenAuthModal] = useState(false);
+
+  const user = useSelector((state) => state.studentAuth.user);
+
+  useEffect(() => {
+    if (user) {
+      const userRole = user.role || "Student";
+      if (userRole === "Teacher") {
+        router.push("/teacher");
+      } else {
+        router.push("/student");
+      }
+    }
+  }, [user]);
+  
 
   const scrollToSection = (id) => {
     const isOnLandingPage = pathname === "/";
