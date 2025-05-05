@@ -110,6 +110,7 @@ const StyledButton = styled(Button)(({ theme }) => ({
 }));
 
 const AuthForm = ({ isLogin, toggleAuth, onClose }) => {
+  console.log("onClose is:", onClose);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -139,6 +140,7 @@ const AuthForm = ({ isLogin, toggleAuth, onClose }) => {
         // console.log("response", response.data);
         dispatch(loginSuccess(response.data));
         toast.success("Logged in successfully");
+        onClose?.();
         console.log("onClose is:", onClose);
         
         const userRole = response.data?.role;
@@ -146,7 +148,7 @@ const AuthForm = ({ isLogin, toggleAuth, onClose }) => {
         if (userRole === "Teacher") {
           router.push("/teacher");
         } else {
-          router.push("/student");
+          router.push("/dashboard/student/home");
         }
       } else {
         const response = await API.post("auth/register", {
@@ -159,13 +161,13 @@ const AuthForm = ({ isLogin, toggleAuth, onClose }) => {
         
         console.log("registered data", response.data);
         dispatch(loginSuccess(response.data));
-        onClose?.();
         toast.success("Registered successfully");
+        onClose?.();
         const userRole = response.data?.role;
         if (userRole === "Teacher") {
           router.push("/teacher");
         } else {
-          router.push("/student");
+          router.push("/dashboard/student/home");
         }
       }
     } catch (error) {
@@ -183,7 +185,7 @@ const AuthForm = ({ isLogin, toggleAuth, onClose }) => {
       if (userRole === "Teacher") {
         router.push("/teacher");
       } else {
-        router.push("/student");
+        router.push("/dashboard/student/home");
       }
     }
   })
@@ -254,7 +256,7 @@ const AuthForm = ({ isLogin, toggleAuth, onClose }) => {
   );
 };
 
-export default function AuthPage(onClose) {
+export default function AuthPage({onClose}) {
   const [isLogin, setIsLogin] = useState(true);
   const toggleAuth = () => setIsLogin((prev) => !prev);
 

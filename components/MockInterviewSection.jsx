@@ -2,7 +2,7 @@
 import React from "react";
 import { API } from "../app/config/apiConfig";
 import { useDispatch } from "react-redux";
-import { updateInterview } from "../app/redux/slices/interviewScheduleSlice";
+import { updateInterview } from "../redux/slices/interviewScheduleSlice";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useState, useEffect } from "react";

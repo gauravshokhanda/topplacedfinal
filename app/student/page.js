@@ -10,11 +10,10 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import Sidebar from "../../components/Sidebar";
 import Header from "../../components/Header";
-import ProtectedRoute from "@/components/ProtectedRoute";
 
 export default function HomePage() {
   return (
-    <ProtectedRoute allowedRoles={["Student"]}>
+    // <ProtectedRoute allowedRoles={["Student"]}>
       <Box display="flex" minHeight="100vh" bgcolor="#f5f7fa">
         <Sidebar />
 
@@ -130,6 +129,6 @@ export default function HomePage() {
           </Box>
         </Box>
       </Box>
-    </ProtectedRoute>
+    // </ProtectedRoute>
   );
 }

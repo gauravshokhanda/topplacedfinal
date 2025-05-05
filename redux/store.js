@@ -2,9 +2,11 @@ import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import studentAuthReducer from "./slices/studentAuthSlice";
+import interviewScheduleReducer from "./slices/interviewScheduleSlice";
  
 const rootReducer = combineReducers({
   studentAuth: studentAuthReducer,
+   interviewSchedule:interviewScheduleReducer
 });
  
 const persistConfig = {

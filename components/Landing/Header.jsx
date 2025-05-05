@@ -12,11 +12,13 @@ import {
   ListItemText,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { use, useState,useEffect } from "react";
+import { use, useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import AuthModal from "@/components/AuthModal"; // Make sure this exists
+import AuthModal from "@/components/AuthModal";
 import { useSelector } from "react-redux";
+import { CircularProgress } from "@mui/material";
+
 
 const navItems = [
   { label: "How It Works", id: "how-it-works" },
@@ -30,20 +32,45 @@ export default function Header() {
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [openAuthModal, setOpenAuthModal] = useState(false);
+  const [authInitiatedFromHeader, setAuthInitiatedFromHeader] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
+
 
   const user = useSelector((state) => state.studentAuth.user);
 
   useEffect(() => {
-    if (user) {
+    if (user && authInitiatedFromHeader) {
       const userRole = user.role || "Student";
       if (userRole === "Teacher") {
         router.push("/teacher");
       } else {
-        router.push("/student");
+        router.push("/dashboard/student/home");
       }
+      // reset the flag to prevent future unintended redirects
+      setAuthInitiatedFromHeader(false);
     }
-  }, [user]);
+  }, [user, authInitiatedFromHeader]);
+
+
+  const handleGetStarted = () => {
+    if (user) {
+      setRedirecting(true); // show loading spinner immediately
+      const userRole = user.role || "Student";
+      if (userRole === "Teacher") {
+        router.push("/teacher");
+      } else {
+        router.push("/dashboard/student/home");
+      }
+    } else {
+      setAuthInitiatedFromHeader(true);
+      setOpenAuthModal(true);
+    }
+  };
   
+
+
+
+
 
   const scrollToSection = (id) => {
     const isOnLandingPage = pathname === "/";
@@ -81,10 +108,11 @@ export default function Header() {
         ))}
         <ListItem button onClick={() => {
           setDrawerOpen(false);
-          setOpenAuthModal(true);
+          handleGetStarted();
         }}>
           <ListItemText primary="Get Started" />
         </ListItem>
+
       </List>
     </Box>
   );
@@ -124,10 +152,19 @@ export default function Header() {
             <Button
               variant="contained"
               sx={{ background: "white", color: "#106861", fontWeight: "bold" }}
-              onClick={() => setOpenAuthModal(true)}
+              onClick={handleGetStarted}
+              disabled={redirecting}
             >
-              Get Started
+              {redirecting ? (
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <CircularProgress size={20} sx={{ color: "#106861" }} />
+                  Redirecting...
+                </Box>
+              ) : (
+                "Get Started"
+              )}
             </Button>
+
           </Box>
 
           {/* Mobile Menu Icon */}

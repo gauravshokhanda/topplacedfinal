@@ -1,7 +1,7 @@
 "use client";
 import { Dialog, DialogContent, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import AuthForm from "./AuthForm"; // Assuming you split the form out
+import AuthForm from "./AuthForm"; 
 
 export default function AuthModal({ open, onClose }) {
   return (
