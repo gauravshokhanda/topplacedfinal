@@ -4,62 +4,52 @@ import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import {
-  Drawer,
   List,
   ListItem,
   ListItemText,
-  AppBar,
   Toolbar,
   Typography,
   Box,
-  CssBaseline,
   Divider,
   IconButton,
   ListItemIcon,
   Avatar,
   Paper,
   InputBase,
-  Grid,
-  useMediaQuery,
   Tooltip,
 } from "@mui/material";
 import { logout } from "@/redux/slices/studentAuthSlice";
 import { useDispatch } from "react-redux";
 import dynamic from "next/dynamic";
+import Swal from "sweetalert2";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import { persistor } from "@/redux/store";
+
+import LogoutIcon from "@mui/icons-material/Logout";
+import SearchIcon from "@mui/icons-material/Search";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 const HomeIcon = dynamic(() => import("@mui/icons-material/Home"), { ssr: false });
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
-import DescriptionIcon from "@mui/icons-material/Description";
 const WorkIcon = dynamic(() => import("@mui/icons-material/Work"), { ssr: false });
+import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import MenuIcon from "@mui/icons-material/Menu";
-import LogoutIcon from "@mui/icons-material/Logout";
-import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
-import SearchIcon from "@mui/icons-material/Search";
-import ProtectedRoute from "@/components/ProtectedRoute";
-import { persistor } from "@/redux/store";
-import Swal from "sweetalert2";
-
-
 
 const drawerWidth = 250;
 
 const menuItems = [
   { text: "Home", path: "/dashboard/student/home", icon: <HomeIcon /> },
-  // { text: "Find People", path: "/dashboard/student/find-mentor", icon: <DashboardIcon /> },
   { text: "Booking", path: "/dashboard/student/booking", icon: <LibraryBooksIcon /> },
-  // { text: "Mock Resumes", path: "/dashboard/student/mock-resumes", icon: <DescriptionIcon /> },
   { text: "Job Card", path: "/dashboard/student/job-card", icon: <WorkIcon /> },
   { text: "Profile", path: "/dashboard/student/profile", icon: <AssignmentIndIcon /> },
 ];
 
 export default function StudentLayout({ children }) {
   const router = useRouter();
-const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const pathname = usePathname();
   const [open, setOpen] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const isMobile = useMediaQuery("(max-width:900px)"); // Detect mobile view
 
   const currentPage = menuItems.find((item) => item.path === pathname)?.text || "Dashboard";
 
@@ -72,14 +62,13 @@ const dispatch = useDispatch()
       confirmButtonColor: "#0A6E6E",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, logout",
-      cancelButtonText: "Cancel",
     }).then((result) => {
       if (result.isConfirmed) {
         dispatch(logout());
         localStorage.clear();
         persistor.purge();
         router.push("/login");
-  
+
         Swal.fire({
           title: "Logged Out",
           text: "You have been successfully logged out.",
@@ -93,33 +82,37 @@ const dispatch = useDispatch()
 
   return (
     <ProtectedRoute allowedRoles={["Student"]}>
-      <Box sx={{ display: "flex", minHeight: "100vh" }}>
-        <CssBaseline />
-
-        {/* Sidebar - Responsive Drawer */}
-        <Drawer
-          variant="permanent"
+      <Box sx={{ display: "flex", height: "100vh", width: "100%" }}>
+        {/* LEFT SIDEBAR */}
+        <Box
           sx={{
             width: open ? drawerWidth : 70,
             flexShrink: 0,
-            "& .MuiDrawer-paper": {
-              width: open ? drawerWidth : 70,
-              boxSizing: "border-box",
-              transition: "width 0.3s ease-in-out",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-            },
+            overflowY: "auto",
+            borderRight: "1px solid #ddd",
+            transition: "width 0.3s ease-in-out",
+            display: "flex",
+            flexDirection: "column",
           }}
         >
-          <Toolbar sx={{ display: "flex", justifyContent: open ? "space-between" : "center", alignItems: "center", backgroundColor: "#0A6E6E" }}>
+          {/* SIDEBAR HEADER */}
+          <Toolbar
+            sx={{
+              display: "flex",
+              justifyContent: open ? "space-between" : "center",
+              alignItems: "center",
+              backgroundColor: "#0A6E6E",
+            }}
+          >
             {open && <Typography variant="h6" color="white">Top Placed</Typography>}
             <IconButton onClick={() => setOpen(!open)} sx={{ color: "white" }}>
               {open ? <ChevronLeftIcon /> : <MenuIcon />}
             </IconButton>
           </Toolbar>
+
           <Divider />
 
+          {/* MENU ITEMS */}
           <List sx={{ flexGrow: 1 }}>
             {menuItems.map((item) => (
               <Tooltip title={!open ? item.text : ""} placement="right" key={item.text}>
@@ -136,7 +129,7 @@ const dispatch = useDispatch()
                       backgroundColor: "#0A6E6E",
                       color: "white",
                     },
-                    cursor: "pointer", // Ensure it's clickable
+                    cursor: "pointer",
                   }}
                 >
                   <ListItemIcon sx={{ color: pathname === item.path ? "white" : "inherit" }}>
@@ -148,67 +141,73 @@ const dispatch = useDispatch()
             ))}
           </List>
 
+          {/* USER INFO & LOGOUT */}
           <Divider />
           <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", mb: 2 }}>
             <Avatar sx={{ width: 50, height: 50, mb: 1 }}>S</Avatar>
             {open && <Typography variant="body1">Student</Typography>}
-            <ListItem component="button" onClick={handleLogout} sx={{ mt: 1, borderRadius: "10px", width: "90%",height:"25%" }}>
-
+            <ListItem
+              component="button"
+              onClick={handleLogout}
+              sx={{ mt: 1, borderRadius: "10px", width: "90%", height: "25%" }}
+            >
               <ListItemIcon sx={{ color: "red" }}>
                 <LogoutIcon />
               </ListItemIcon>
               {open && <ListItemText primary="Logout" sx={{ color: "red" }} />}
             </ListItem>
           </Box>
-        </Drawer>
+        </Box>
 
-        {/* Main Content */}
+        {/* RIGHT MAIN CONTENT */}
         <Box
-          component="main"
           sx={{
             flexGrow: 1,
-            p: 0,
-            width: "100%",
+            overflowY: "auto",
+            height: "100vh",
             display: "flex",
-            justifyContent: "center",
+            flexDirection: "column",
           }}
         >
-          <AppBar
-            position="fixed"
+          {/* APP BAR */}
+          <Box
             sx={{
-              width: `calc(100% - ${open ? drawerWidth : 70}px)`,
-              marginLeft: open ? `${drawerWidth}px` : "70px",
-              transition: "width 0.3s ease-in-out, margin 0.3s ease-in-out",
+              position: "sticky",
+              top: 0,
+              zIndex: 10,
               backgroundColor: "#0A6E6E",
+              px: 2,
+              py: 1.5,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              color: "white",
             }}
           >
-            <Toolbar>
-              <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                {currentPage}
-              </Typography>
+            <Typography variant="h6">{currentPage}</Typography>
+            <Paper
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                borderRadius: "8px",
+                width: 300,
+                backgroundColor: "white",
+              }}
+            >
+              <InputBase
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                sx={{ ml: 1, flex: 1 }}
+              />
+              <SearchIcon sx={{ color: "#4a238d" }} />
+            </Paper>
+          </Box>
 
-              <Paper
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  borderRadius: "8px",
-                  width: 300,
-                  backgroundColor: "white",
-                }}
-              >
-                <InputBase
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  sx={{ ml: 1, flex: 1 }}
-                />
-                <SearchIcon sx={{ color: "#4a238d" }} />
-              </Paper>
-            </Toolbar>
-          </AppBar>
-
-
-          <Box sx={{ width: "100%", maxWidth: "1200px", mx: "auto", display: "flex", p: 2, mt: 10 }}>{children}</Box>
+          {/* CHILDREN */}
+          <Box sx={{ width: "100%", maxWidth: "1200px", mx: "auto", p: 2 }}>
+            {children}
+          </Box>
         </Box>
       </Box>
     </ProtectedRoute>

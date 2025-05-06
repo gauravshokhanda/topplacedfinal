@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { Typography, Box, Chip } from '@mui/material';
 import DynamicTable from '../../../../components/DynamicTable'; 
 import { API } from '../../../config/apiConfig';
+import { useSelector } from 'react-redux';
+
 
 export default function TeacherBooking() {
   const [interviews, setInterviews] = useState([]);
@@ -12,6 +14,8 @@ export default function TeacherBooking() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
+  const token = useSelector((state) => state.studentAuth.token);
+
 
   useEffect(() => {
     const fetchInterviews = async () => {
@@ -21,6 +25,9 @@ export default function TeacherBooking() {
           params: {
             page: page + 1,
             limit: rowsPerPage,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`, 
           },
         });
         setInterviews(response.data.data);
