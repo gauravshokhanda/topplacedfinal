@@ -25,14 +25,15 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
 import DescriptionIcon from '@mui/icons-material/Description';
+import HomeIcon from '@mui/icons-material/Home';
 const drawerWidth = 240;
 
 const menuItems = [
-  // { text: "Home", path: "/dashboard/admin/home", icon: <HomeIcon /> },
-  // { text: "Participants", path: "/dashboard/admin/Participant", icon: <DashboardIcon /> },
+  { text: "Job Card", path: "/dashboard/admin/jobcard", icon: <DashboardIcon /> },
   { text: "Booking", path: "/dashboard/admin/booking", icon: <LibraryBooksIcon /> },
   { text: "Available Slots", path: "/dashboard/admin/AvailableSlotsManagement", icon: <AccessTimeIcon  /> },
   { text: "Workshop", path: "/dashboard/admin/Workshop", icon: <WorkIcon /> },
+  { text: "Students", path: "/dashboard/admin/Student", icon: <HomeIcon /> },
 ];
 
 export default function TeacherLayout({ children }) {

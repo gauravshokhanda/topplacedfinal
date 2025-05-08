@@ -1,146 +1,159 @@
-'use client';
+"use client";
 
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useSelector } from "react-redux";
 import {
-  Box,
-  Typography,
-  Paper,
-  Grid,
-  List,
-  ListItem,
-  ListItemText,
-  Link,
   Avatar,
+  Box,
   Card,
   CardContent,
-  CircularProgress,
-} from '@mui/material';
-import { useEffect, useState } from 'react';
-import { API } from '@/app/config/apiConfig';
-import { useSelector } from 'react-redux';
+  Grid,
+  Typography,
+  LinearProgress,
+  Chip,
+  Divider,
+  Tooltip,
+  Fade,
+} from "@mui/material";
+import StarIcon from "@mui/icons-material/Star";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 
-export default function ProfilePage() {
-  const token = useSelector((state) => state.studentAuth.token);
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
+export default function StudentJobCard() {
+  const [student, setStudent] = useState(null);
+  const {user,  token } = useSelector((state) => state.studentAuth);
+
+  console.log("User from Redux:", user,  token);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchJobCard = async () => {
+      if (!user?.id || !token) return;
       try {
-        const res = await API.get('auth/me', {
-          headers: { Authorization: `Bearer ${token}` },
+        const response = await axios.get(`http://localhost:5100/api/jobcards/${user.id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
-        setUser(res.data);
+        setStudent(response.data);
       } catch (err) {
-        console.error('Failed to fetch user:', err);
-      } finally {
-        setLoading(false);
+        console.error("Error fetching job card", err);
       }
     };
 
-    fetchData();
-  }, [token]);
+    fetchJobCard();
+  }, [user, token]);
 
-  if (loading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  const student = user?.profile?.studentDetails || {};
-  const techSkills = student.technicalSkills || [];
-  const softSkills = student.softSkills || [];
-  const certifications = student.certifications || [];
+  if (!student) return <p>Loading job card...</p>;
 
   return (
-    <Box
+    <Card
+      elevation={4}
       sx={{
-        width: '100%',
-        minHeight: '100vh',
-        backgroundColor: '#0A6E6E',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'flex-start',
-        py: 6,
-        px: 2,
+        maxWidth: 540,
+        mx: "auto",
+        p: 4,
+        borderRadius: 6,
+        background: "#f8fffe",
+        boxShadow: "0 20px 45px rgba(0, 110, 110, 0.18)",
+        border: "1px solid #0A6E6E15",
+        transition: "transform 0.3s ease",
+        '&:hover': { transform: "scale(1.015)" },
       }}
     >
-      <Box sx={{ width: '100%', maxWidth: '1000px' }}>
-        {/* Header */}
-        <Paper elevation={6} sx={{ p: 4, borderRadius: 3, mb: 4 }}>
-          <Grid container spacing={3} alignItems="center">
-            <Grid item xs={12} sm={3}>
-              <Avatar
-                src={student.image}
-                alt={user.name}
-                sx={{ width: 100, height: 100 }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={9}>
-              <Typography variant="h4" color="#0A6E6E">{user.name}</Typography>
-              <Typography variant="subtitle1" color="text.secondary">
-                {student.position} @ {student.company}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {student.education}
-              </Typography>
-            </Grid>
-          </Grid>
-        </Paper>
+      <CardContent>
+        <Box display="flex" alignItems="center" gap={2} mb={3}>
+          <Avatar
+            src={student.photo || "/avatar.png"}
+            sx={{ width: 80, height: 80, border: "3px solid #0A6E6E", boxShadow: "0 4px 10px rgba(0,0,0,0.1)" }}
+          />
+          <Box>
+            <Typography variant="h5" fontWeight={800} color="#0A6E6E">
+              {user.name}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {student.subtitle || "Student"}
+            </Typography>
+          </Box>
+        </Box>
 
-        {/* Info Cards */}
-        <Grid container spacing={3}>
-          <ProfileCard title="Feedback" content={student.feedback || 'N/A'} />
-          <ProfileCard title="Rating" content={student.rating || 'N/A'} />
-          <ProfileCard title="Academic Performance" content={student.academicPerformance} />
-          <ProfileCard title="Phone" content={student.phone} />
-          <ProfileCard title="WhatsApp" content={student.whatsapp} />
-          <ProfileCard title="LinkedIn URL" content={student.linkedinUrl} />
-          <ProfileCard title="Location" content={student.location} />
-          <ProfileCard title="Looking For" content={student.lookingFor} />
-          <ProfileCard title="Total Experience" content={student.totalExperience} />
-          <ProfileCard title="Working" content={student.working ? 'Yes' : 'No'} />
-          <ProfileCard title="Resume">
-            <Link href={student.resume} target="_blank" rel="noreferrer" underline="hover">
-              View Resume
-            </Link>
-          </ProfileCard>
-          <ProfileCard title="Portfolio">
-            <Link href={student.portfolio} target="_blank" rel="noreferrer" underline="hover">
-              {student.portfolio}
-            </Link>
-          </ProfileCard>
-          <ProfileCard title="Technical Skills" list={techSkills} />
-          <ProfileCard title="Soft Skills" list={softSkills} />
-          <ProfileCard title="Certifications" list={certifications} />
-        </Grid>
-      </Box>
-    </Box>
-  );
-}
-
-function ProfileCard({ title, content, list, children }) {
-  return (
-    <Grid item xs={12} sm={6}>
-      <Card elevation={4} sx={{ borderRadius: 3, height: '100%' }}>
-        <CardContent>
-          <Typography variant="h6" color="#0A6E6E" gutterBottom>
-            {title}
+        <Box display="flex" alignItems="center" gap={1} mb={2}>
+          <StarIcon sx={{ color: "#0A6E6E", fontSize: 26 }} />
+          <Typography variant="h6" fontWeight={700} color="#0A6E6E">
+            {student.rating}
           </Typography>
-          {content && <Typography>{content}</Typography>}
-          {list && (
-            <List dense>
-              {list.map((item, idx) => (
-                <ListItem key={idx} sx={{ py: 0 }}>
-                  <ListItemText primary={item} />
-                </ListItem>
-              ))}
-            </List>
-          )}
-          {children}
-        </CardContent>
-      </Card>
-    </Grid>
+          <Tooltip title="Top Performer" TransitionComponent={Fade} TransitionProps={{ timeout: 600 }}>
+            <EmojiEventsIcon sx={{ color: "gold", fontSize: 22 }} />
+          </Tooltip>
+        </Box>
+
+        <Typography
+          variant="body2"
+          mb={3}
+          fontStyle="italic"
+          color="text.primary"
+          sx={{
+            background: "#e0fdfb",
+            p: 2,
+            borderRadius: 2,
+            borderLeft: "4px solid #0A6E6E",
+            boxShadow: "inset 0 0 5px rgba(10,110,110,0.1)"
+          }}
+        >
+          “{student.feedback}”
+        </Typography>
+
+        <Divider sx={{ mb: 3 }} />
+
+        <Grid container spacing={2}>
+          {[ 
+            { label: 'Academic Performance', value: student.academicPerformance },
+            { label: 'Attendance', value: student.attendance },
+            { label: 'Communication', value: student.communication },
+            { label: 'Teamwork', value: student.teamwork },
+            { label: 'Technical Skills', value: student.technicalSkills },
+            { label: 'Progress', value: student.progress }
+          ].map((item, idx) => (
+            <Grid item xs={12} sm={6} key={idx}>
+              <Typography
+                variant="subtitle2"
+                gutterBottom
+                fontWeight={600}
+                color="#0A6E6E"
+              >
+                {item.label}
+              </Typography>
+              <LinearProgress
+                variant="determinate"
+                value={item.value || 0}
+                sx={{
+                  height: 10,
+                  borderRadius: 6,
+                  backgroundColor: "#e0f2f1",
+                  '& .MuiLinearProgress-bar': {
+                    background: "linear-gradient(to right, #0A6E6E, #33c3b9)"
+                  }
+                }}
+              />
+              <Typography variant="caption" color="text.secondary">
+                {item.value || 0}%
+              </Typography>
+            </Grid>
+          ))}
+
+          <Grid item xs={6}>
+            <Typography variant="subtitle2" fontWeight={600} color="#0A6E6E">
+              Total Projects
+            </Typography>
+            <Chip label={`${student.totalProjects || 0} Projects`} color="primary" variant="outlined" sx={{ mt: 1 }} />
+          </Grid>
+          <Grid item xs={6}>
+            <Typography variant="subtitle2" fontWeight={600} color="#0A6E6E">
+              Mentor
+            </Typography>
+            <Chip label={student.mentor || "Unknown"} sx={{ mt: 1, background: "#0A6E6E", color: "white" }} />
+          </Grid>
+        </Grid>
+      </CardContent>
+    </Card>
   );
 }

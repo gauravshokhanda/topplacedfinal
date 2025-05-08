@@ -146,7 +146,7 @@ const AuthForm = ({ isLogin, toggleAuth, onClose }) => {
         const userRole = response.data?.role;
         // console.log("userRole", userRole);
         if (userRole === "Teacher") {
-          router.push("/teacher");
+          router.push("/Onboarding");
         } else {
           router.push("/dashboard/student/home");
         }
@@ -165,7 +165,7 @@ const AuthForm = ({ isLogin, toggleAuth, onClose }) => {
         onClose?.();
         const userRole = response.data?.role;
         if (userRole === "Teacher") {
-          router.push("/teacher");
+          router.push("/Onboarding");
         } else {
           router.push("/dashboard/student/home");
         }
@@ -179,16 +179,20 @@ const AuthForm = ({ isLogin, toggleAuth, onClose }) => {
 
 
   const user = useSelector((state) => state.studentAuth.user);
+  console.log("user", user);
+  const newdata = useSelector((state) => state.studentAuth);
+  console.log("newdata", newdata);
   useEffect(() => {
     if (user) {
-      const userRole = user.role || "Student";
+      const userRole = user.role;
+      console.log("userrole", userRole);
       if (userRole === "Teacher") {
-        router.push("/teacher");
+        router.push("/Onboarding");
       } else {
         router.push("/dashboard/student/home");
       }
     }
-  })
+  },[user])
 
   return (
     <FormContainer>

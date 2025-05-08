@@ -42,7 +42,7 @@ export default function Header() {
     if (user && authInitiatedFromHeader) {
       const userRole = user.role || "Student";
       if (userRole === "Teacher") {
-        router.push("/teacher");
+        router.push("/Onboarding");
       } else {
         router.push("/dashboard/student/home");
       }
@@ -57,7 +57,7 @@ export default function Header() {
       setRedirecting(true); // show loading spinner immediately
       const userRole = user.role || "Student";
       if (userRole === "Teacher") {
-        router.push("/teacher");
+        router.push("/Onboarding");
       } else {
         router.push("/dashboard/student/home");
       }

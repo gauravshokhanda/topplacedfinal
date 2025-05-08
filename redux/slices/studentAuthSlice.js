@@ -13,9 +13,10 @@ const studentAuthSlice = createSlice({
     loginSuccess: (state, action) => {
         // console.log("🟢 loginSuccess dispatched with payload:", action.payload); 
       state.user = {
+        id: action.payload._id,
         name: action.payload.name,
         email: action.payload.email,
-        id: action.payload._id,
+        role: action.payload.role,
       };
       state.token = action.payload.token;
     },
