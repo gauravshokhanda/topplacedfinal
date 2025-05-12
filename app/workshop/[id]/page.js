@@ -12,13 +12,27 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { ToastContainer } from "react-toastify";
-import dayjs from "dayjs";
 import WorkshopRegisterForm from "../../../components/workshopRegisterForm";
+
+// 👇 Static params for output: 'export'
+export async function generateStaticParams() {
+  try {
+    const res = await fetch("https://testing.topplaced.com/api/workshops");
+    const workshops = await res.json();
+
+    return workshops.map((workshop) => ({
+      id: workshop.id.toString(),
+    }));
+  } catch (error) {
+    console.error("Error generating static params:", error);
+    return [];
+  }
+}
 
 export default function WorkshopRegistrationPage() {
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
-  const [workshop, setWorkshop] = useState(null);
+  const [workshop, setWorkshop] = useState < any > null;
 
   useEffect(() => {
     if (id) {
@@ -71,36 +85,22 @@ export default function WorkshopRegistrationPage() {
     >
       <ToastContainer position="top-right" autoClose={3000} />
       <Grid container spacing={4} justifyContent="center" px={3}>
-        {/* Left Section */}
         <Grid item xs={12} md={6}>
-          {/* Workshop Title Section */}
           <Box
             sx={{ backgroundColor: "#D3F1F1", p: 3, borderRadius: 3, mb: 4 }}
           >
             <Typography
               variant="h5"
-              sx={{
-                fontWeight: "bold",
-                textAlign: "center",
-                color: "#0A6E6E",
-              }}
+              sx={{ fontWeight: "bold", textAlign: "center", color: "#0A6E6E" }}
             >
               {workshop.workshopName}
             </Typography>
-            <Typography
-              sx={{
-                mt: 2,
-                textAlign: "center",
-                color: "#1B3B3B",
-              }}
-            >
+            <Typography sx={{ mt: 2, textAlign: "center", color: "#1B3B3B" }}>
               Join us for a powerful session on building a standout resume and
-              optimizing your LinkedIn profile. Learn how to structure your
-              resume, showcase achievements, and tailor it for any role.
+              optimizing your LinkedIn profile...
             </Typography>
           </Box>
 
-          {/* What You'll Learn */}
           <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
             WHAT YOU’LL LEARN
           </Typography>
@@ -116,7 +116,6 @@ export default function WorkshopRegistrationPage() {
             </CardContent>
           </Card>
 
-          {/* Testimonials */}
           <Grid container spacing={2}>
             {["Zal ul Nabi Baig", "Sourabh Samanta", "Sourabh Samanta"].map(
               (name, i) => (
