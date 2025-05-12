@@ -13,13 +13,13 @@ import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 
 export default function UpcomingWorkshops() {
-  const [workshops, setWorkshops] =  useState([]);
+  const [workshops, setWorkshops] = useState([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter(); // ✅ Initialize router
 
   useEffect(() => {
     axios
-      .get("https://api.topplaced.com/api/workshops")
+      .get("https://testing.topplaced.com/ap")
       .then((res) => {
         setWorkshops(res.data);
         setLoading(false);
