@@ -24,7 +24,6 @@ jobs:
       - name: Build and Export Static Site
         run: |
           npm run build
-          npx next export
 
       - name: Upload via SCP to HostMyCode
         uses: appleboy/scp-action@master
