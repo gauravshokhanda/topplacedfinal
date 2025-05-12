@@ -10,22 +10,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: ⏬ Checkout Code
         uses: actions/checkout@v3
 
-      - name: Install Node.js
+      - name: 🟢 Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: "20"
 
-      - name: Install Dependencies
-        run: npm install
+      - name: 📦 Install Dependencies
+        run: npm ci
 
-      - name: Build and Export Static Site
+      - name: 🛠️ Build & Export Static Site
         run: |
           npm run build
+          npm run export
 
-      - name: Upload via SCP to HostMyCode
+      - name: 🚀 Upload Exported Files to HostMyCode
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
