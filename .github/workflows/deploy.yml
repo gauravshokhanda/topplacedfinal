@@ -3,7 +3,7 @@ name: 🚀 Deploy Next.js Static Site to HostMyCode
 on:
   push:
     branches:
-      - main # change if your default branch is different
+      - main
 
 jobs:
   deploy:
@@ -22,13 +22,16 @@ jobs:
         run: npm install
 
       - name: Build and Export Static Site
-        run: npm run build
+        run: |
+          npm run build
+          npx next export
 
-      - name: Deploy to HostMyCode via FTP
-        uses: w9jds/ftp-deploy-action@v1.0.1
+      - name: Upload via SCP to HostMyCode
+        uses: appleboy/scp-action@master
         with:
-          server: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./out
-          server-dir: /public_html/
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "out/*"
+          target: "/home/topplace/public_html"
