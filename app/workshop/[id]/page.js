@@ -23,7 +23,7 @@ export default function WorkshopRegistrationPage() {
   useEffect(() => {
     if (id) {
       axios
-        .get(`https://api.topplaced.com/api/workshops/${id}`)
+        .get(`https://testing.topplaced.com/api/workshops/${id}`)
         .then((res) => {
           setWorkshop(res.data);
           setLoading(false);
@@ -139,9 +139,7 @@ export default function WorkshopRegistrationPage() {
           </Grid>
         </Grid>
 
-     
-    <WorkshopRegisterForm workshopId={id}  />
-
+        <WorkshopRegisterForm workshopId={id} />
       </Grid>
     </Box>
   );
