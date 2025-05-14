@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useSelector } from 'react-redux';
 import DynamicTable from '@/components/DynamicTable';
 import {
@@ -73,7 +72,7 @@ export default function JobCardAdminPanel() {
 
   const handleEditSave = async () => {
     try {
-      await axios.put(`http://localhost:5000/api/jobcards/${selectedCard._id}`, selectedCard, {
+      await API.put(`jobcards/${selectedCard._id}`, selectedCard, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setOpenEdit(false);
@@ -86,7 +85,7 @@ export default function JobCardAdminPanel() {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this job card?')) return;
     try {
-      await axios.delete(`http://localhost:5000/api/jobcards/${id}`, {
+      await API.delete(`jobcards/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchJobCards();
@@ -97,7 +96,7 @@ export default function JobCardAdminPanel() {
 
   const handleAddJobCard = async () => {
     try {
-      await axios.post('http://localhost:5000/api/jobcards', newCard, {
+      await API.post('jobcards', newCard, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setOpenAdd(false);

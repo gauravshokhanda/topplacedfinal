@@ -83,7 +83,7 @@ const StudentFormModal = ({ open, onClose, onSave, student }) => {
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose} color="inherit">Cancel</Button>
-                <Button onClick={handleSubmit} variant="contained">
+                <Button onClick={handleSubmit} variant="contained" sx={{backgroundColor:'#106861'}}>
                     {student ? 'Update' : 'Create'}
                 </Button>
             </DialogActions>

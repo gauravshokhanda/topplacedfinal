@@ -11,11 +11,14 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
+    Menu,
+    MenuItem,
+    TextField,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import axios from 'axios';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DynamicTable from '@/components/DynamicTable';
 import StudentFormModal from './StudentFormModal';
 import { API } from '../../../config/apiConfig';
@@ -29,6 +32,15 @@ const StudentList = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [confirmDelete, setConfirmDelete] = useState({ open: false, student: null });
+
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [menuRow, setMenuRow] = useState(null);
+
+    const [openCardModal, setOpenCardModal] = useState(false);
+    const [cardStudent, setCardStudent] = useState(null);
+    const [cardFields, setCardFields] = useState([]);
+    const [formData, setFormData] = useState({});
+    const [jobRoleId, setJobRoleId] = useState('');
 
     const fetchStudents = async () => {
         try {
@@ -62,9 +74,57 @@ const StudentList = () => {
         }
     };
 
+    const handleVerify = async (student) => {
+        try {
+            const position = student?.profile?.studentDetails?.position;
+            if (!position) return alert('No position set for this student.');
+
+            const roles = await API.get('/job-roles');
+            const role = roles.data.find((r) => r.name === position);
+            if (!role) return alert(`No job role found for "${position}"`);
+
+            const templateRes = await API.get(`/job-role-templates/${role._id}`);
+            const fields = templateRes.data?.fields || [];
+
+            setJobRoleId(role._id);
+            setCardFields(fields);
+            setCardStudent(student);
+            setFormData({});
+            setOpenCardModal(true);
+        } catch (err) {
+            alert('Something went wrong.');
+            console.error(err);
+        }
+    };
+
+    const handleMenuOpen = (event, row) => {
+        setAnchorEl(event.currentTarget);
+        setMenuRow(row);
+    };
+
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+        setMenuRow(null);
+    };
+
     const handleSave = () => {
         setOpenModal(false);
         fetchStudents();
+    };
+
+    const handleCardSubmit = async () => {
+        try {
+            const filledFields = Object.entries(formData).map(([label, value]) => ({ label, value }));
+            await API.post(`/job-cards/${cardStudent._id}`, {
+                filledFields,
+                assignedBy: cardStudent._id // 🔥 Using student._id as assignedBy (as per your instruction)
+            });
+            alert('Job card submitted!');
+            setOpenCardModal(false);
+        } catch (err) {
+            alert('Failed to submit job card');
+            console.error(err);
+        }
     };
 
     const columns = [
@@ -74,10 +134,9 @@ const StudentList = () => {
             id: 'actions',
             label: 'Actions',
             render: (row) => (
-                <Stack direction="row" spacing={1}>
-                    <IconButton onClick={() => handleEdit(row)}><EditIcon /></IconButton>
-                    <IconButton onClick={() => setConfirmDelete({ open: true, student: row })}><DeleteIcon /></IconButton>
-                </Stack>
+                <IconButton onClick={(e) => handleMenuOpen(e, row)}>
+                    <MoreVertIcon />
+                </IconButton>
             ),
         },
     ];
@@ -86,7 +145,15 @@ const StudentList = () => {
         <Box p={3}>
             <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
                 <Typography variant="h5" fontWeight="bold" color="#106861">Students</Typography>
-                <Button variant="contained" startIcon={<AddIcon />} onClick={() => { setEditStudent(null); setOpenModal(true); }}>
+                <Button
+                    variant="contained"
+                    sx={{ backgroundColor: '#106861' }}
+                    startIcon={<AddIcon />}
+                    onClick={() => {
+                        setEditStudent(null);
+                        setOpenModal(true);
+                    }}
+                >
                     Add Student
                 </Button>
             </Stack>
@@ -121,6 +188,45 @@ const StudentList = () => {
                 <DialogActions>
                     <Button onClick={() => setConfirmDelete({ open: false, student: null })}>Cancel</Button>
                     <Button color="error" onClick={handleDelete}>Delete</Button>
+                </DialogActions>
+            </Dialog>
+
+            <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+            >
+                <MenuItem onClick={() => { handleEdit(menuRow); handleMenuClose(); }}>
+                    <EditIcon fontSize="small" sx={{ mr: 1 }} /> Edit
+                </MenuItem>
+                <MenuItem onClick={() => { setConfirmDelete({ open: true, student: menuRow }); handleMenuClose(); }}>
+                    <DeleteIcon fontSize="small" sx={{ mr: 1 }} /> Delete
+                </MenuItem>
+                <MenuItem onClick={() => { handleVerify(menuRow); handleMenuClose(); }}>
+                    ✅ Verify
+                </MenuItem>
+            </Menu>
+
+            <Dialog open={openCardModal} onClose={() => setOpenCardModal(false)} maxWidth="sm" fullWidth>
+                <DialogTitle>Verify {cardStudent?.name}</DialogTitle>
+                <DialogContent>
+                    {cardFields.map((field, idx) => (
+                        <TextField
+                            key={idx}
+                            label={field.name}
+                            type={field.type === 'number' ? 'number' : 'text'}
+                            fullWidth
+                            sx={{ mb: 2 }}
+                            value={formData[field.name] || ''}
+                            onChange={(e) =>
+                                setFormData((prev) => ({ ...prev, [field.name]: e.target.value }))
+                            }
+                        />
+                    ))}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenCardModal(false)}>Cancel</Button>
+                    <Button variant="contained" onClick={handleCardSubmit}>Submit</Button>
                 </DialogActions>
             </Dialog>
         </Box>

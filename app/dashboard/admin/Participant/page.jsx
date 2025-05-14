@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Button, IconButton, Box, Typography, MenuItem, TextField } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 import DynamicTable from '../../../../components/DynamicTable';

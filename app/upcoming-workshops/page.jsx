@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import {
   Container,
   Grid,
@@ -11,15 +10,16 @@ import {
 } from "@mui/material";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
+import { API } from "@/app/config/apiConfig";
 
 export default function UpcomingWorkshops() {
-  const [workshops, setWorkshops] =  useState([]);
+  const [workshops, setWorkshops] = useState([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter(); // ✅ Initialize router
 
   useEffect(() => {
-    axios
-      .get("https://api.topplaced.com/api/workshops")
+    API
+      .get("workshops")
       .then((res) => {
         setWorkshops(res.data);
         setLoading(false);

@@ -26,14 +26,17 @@ import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
 import DescriptionIcon from '@mui/icons-material/Description';
 import HomeIcon from '@mui/icons-material/Home';
-const drawerWidth = 240;
 
+const drawerWidth = 240;
 const menuItems = [
   { text: "Job Card", path: "/dashboard/admin/jobcard", icon: <DashboardIcon /> },
   { text: "Booking", path: "/dashboard/admin/booking", icon: <LibraryBooksIcon /> },
   { text: "Available Slots", path: "/dashboard/admin/AvailableSlotsManagement", icon: <AccessTimeIcon  /> },
   { text: "Workshop", path: "/dashboard/admin/Workshop", icon: <WorkIcon /> },
   { text: "Students", path: "/dashboard/admin/Student", icon: <HomeIcon /> },
+  { text: "Role", path: "/dashboard/admin/JobRole", icon: <WorkIcon /> },
+  { text: "job-role-templates", path: "/dashboard/admin/job-role-templates", icon: <LibraryBooksIcon /> },
+  { text: "JobCardsPage", path: "/dashboard/admin/JobCardsPage", icon: <AccessTimeIcon  /> },
 ];
 
 export default function TeacherLayout({ children }) {

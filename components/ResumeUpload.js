@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
-import axios from "axios";
 import { CircularProgress, TextField, Typography, Box, Button } from "@mui/material";
+import { API } from "@/app/config/apiConfig";
 
 export default function ResumeUpload() {
     const [resumeData, setResumeData] = useState(null);
@@ -18,7 +18,7 @@ export default function ResumeUpload() {
     const fetchResume = async () => {
         setLoading(true);
         try {
-            const response = await axios.get("http://localhost:5001/api/resume", {
+            const response = await API.get("resume", {
                 headers: {
                     "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3OGUzNDI4MjA0NTdlOGY2ZjI4YzhhZiIsInJvbGUiOiJTdHVkZW50IiwiaWF0IjoxNzQwMDM3NDE2LCJleHAiOjE3NDI2Mjk0MTZ9.nL4qznV5juQeTZjNOb07oxeeG__RQf2gwHeU7xCyWQs`
                 }
@@ -51,7 +51,7 @@ export default function ResumeUpload() {
         formData.append("resume", selectedFile);
 
         // try {
-        //     const response = await axios.post("http://localhost:5001/api/resume/upload", formData, {
+        //     const response = await API.post("resume/upload", formData, {
         //         headers: {
         //             "Content-Type": "multipart/form-data",
         //             "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3OGUzNDI4MjA0NTdlOGY2ZjI4YzhhZiIsInJvbGUiOiJTdHVkZW50IiwiaWF0IjoxNzQwMDM3NDE2LCJleHAiOjE3NDI2Mjk0MTZ9.nL4qznV5juQeTZjNOb07oxeeG__RQf2gwHeU7xCyWQs`
@@ -69,7 +69,7 @@ export default function ResumeUpload() {
     const handleSave = async () => {
         setLoading(true);
         try {
-            await axios.put("http://localhost:5001/api/resume", { rawText }, {
+            await API.put("resume", { rawText }, {
                 headers: {
                     "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3OGUzNDI4MjA0NTdlOGY2ZjI4YzhhZiIsInJvbGUiOiJTdHVkZW50IiwiaWF0IjoxNzQwMDM3NDE2LCJleHAiOjE3NDI2Mjk0MTZ9.nL4qznV5juQeTZjNOb07oxeeG__RQf2gwHeU7xCyWQs`
                 }
@@ -86,8 +86,8 @@ export default function ResumeUpload() {
             <Typography variant="h4" sx={{ marginBottom: 2 }}>Upload Resume</Typography>
 
             {/* Resume Upload Box */}
-            <Box 
-                {...getRootProps()} 
+            <Box
+                {...getRootProps()}
                 sx={{
                     border: "2px dashed #ccc",
                     padding: "20px",
@@ -103,10 +103,10 @@ export default function ResumeUpload() {
             </Box>
 
             {/* Upload Button */}
-            <Button 
-                variant="contained" 
-                color="primary" 
-                onClick={handleUpload} 
+            <Button
+                variant="contained"
+                color="primary"
+                onClick={handleUpload}
                 sx={{ marginBottom: 2 }}
                 disabled={loading}
                 onKeyPress={(e) => e.key === "Enter" && handleUpload()}

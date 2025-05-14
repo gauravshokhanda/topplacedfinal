@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useSelector } from "react-redux";
+import { API } from "@/app/config/apiConfig";
 import {
   Avatar,
   Box,
@@ -21,15 +21,15 @@ import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 
 export default function StudentJobCard() {
   const [student, setStudent] = useState(null);
-  const {user,  token } = useSelector((state) => state.studentAuth);
+  const { user, token } = useSelector((state) => state.studentAuth);
 
-  console.log("User from Redux:", user,  token);
+  console.log("User from Redux:", user, token);
 
   useEffect(() => {
     const fetchJobCard = async () => {
       if (!user?.id || !token) return;
       try {
-        const response = await axios.get(`http://localhost:5100/api/jobcards/${user.id}`, {
+        const response = await API.get(`jobcards/${user.id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -105,7 +105,7 @@ export default function StudentJobCard() {
         <Divider sx={{ mb: 3 }} />
 
         <Grid container spacing={2}>
-          {[ 
+          {[
             { label: 'Academic Performance', value: student.academicPerformance },
             { label: 'Attendance', value: student.attendance },
             { label: 'Communication', value: student.communication },
