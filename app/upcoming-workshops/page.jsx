@@ -11,6 +11,7 @@ import {
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { API } from "@/app/config/apiConfig";
+import axios from "axios";
 
 export default function UpcomingWorkshops() {
   const [workshops, setWorkshops] = useState([]);
