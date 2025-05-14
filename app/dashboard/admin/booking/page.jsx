@@ -118,7 +118,7 @@ export default function TeacherBooking() {
   ];
 
   return (
-    <Box sx={{ p: 3, maxWidth: '1400px', margin: '0 auto' }}>
+    <Box sx={{ p: 3, maxWidth: '1400px', margin: '0 auto',overflowX: 'auto', }}>
       <Typography
         variant="h4"
         gutterBottom

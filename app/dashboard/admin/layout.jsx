@@ -14,7 +14,6 @@ export default function AdminLayout({ children }) {
   const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
-    console.log("layout useeffect")
     setTimeout(() => {
       if (pathname === "/dashboard/admin/login") {
         setIsAuthorized(true); // allow login page always

@@ -103,10 +103,10 @@ export default function TeacherLayout({ children }) {
       <Drawer
         variant="permanent"
         sx={{
-          width: open ? drawerWidth : 70,
+          width: open ? drawerWidth : 50,
           flexShrink: 0,
           "& .MuiDrawer-paper": {
-            width: open ? drawerWidth : 70,
+            width: open ? drawerWidth : 60,
             boxSizing: "border-box",
             transition: "width 0.3s ease-in-out",
             display: "flex",
@@ -206,9 +206,13 @@ export default function TeacherLayout({ children }) {
           flexGrow: 1,
           p: 3,
           mt: 8,
+          height: "100vh",             // Ensures full viewport height
+          overflowY: "auto",           // Enables vertical scroll
+          overflowX: "hidden",         // Keeps horizontal layout clean
           transition: "margin 0.3s ease-in-out",
         }}
       >
+
         {children}
       </Box>
     </Box>

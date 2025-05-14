@@ -78,33 +78,39 @@ const DynamicTable = ({
       elevation={6}
       sx={{
         borderRadius: '8px',
-        overflow: 'hidden',
         border: '1px solid #106861',
+        width: '100%',
+        overflowX: 'auto',
+        minWidth: '800px',
       }}
     >
-      <Table sx={{ minWidth: 650 }} aria-label="dynamic table">
-        <TableHead>
-          <TableRow>
-            {columns.map((column) => (
-              <StyledTableCell key={column.id}>{column.label}</StyledTableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {data.map((row, index) => (
-            <StyledTableRow
-              key={row._id || index}
-              onClick={() => onRowClick && onRowClick(row)} // Add onClick handler
-            >
+      <Box sx={{ minWidth: 800 }}>
+
+
+        <Table sx={{ minWidth: 650 }} aria-label="dynamic table">
+          <TableHead>
+            <TableRow>
               {columns.map((column) => (
-                <StyledTableCell key={column.id}>
-                  {column.render ? column.render(row) : row[column.id]}
-                </StyledTableCell>
+                <StyledTableCell key={column.id}>{column.label}</StyledTableCell>
               ))}
-            </StyledTableRow>
-          ))}
-        </TableBody>
-      </Table>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {data.map((row, index) => (
+              <StyledTableRow
+                key={row._id || index}
+                onClick={() => onRowClick && onRowClick(row)} // Add onClick handler
+              >
+                {columns.map((column) => (
+                  <StyledTableCell key={column.id}>
+                    {column.render ? column.render(row) : row[column.id]}
+                  </StyledTableCell>
+                ))}
+              </StyledTableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Box>
       <TablePagination
         rowsPerPageOptions={rowsPerPageOptions}
         component="div"

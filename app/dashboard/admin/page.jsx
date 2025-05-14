@@ -27,7 +27,7 @@ export default function AdminDashboard() {
   if (!isMounted || !token || user?.role?.toLowerCase() !== "admin") return null;
 
   return (
-    <Container sx={{ textAlign: "center", mt: 10 }}>
+    <Container sx={{ textAlign: "center",border: "1px solid #ccc", padding: "20px", marginTop: "20px" }}>
       <Typography variant="h4">Admin Dashboard</Typography>
       <Typography variant="body1">
         Manage all interviews, users, and data from this panel.

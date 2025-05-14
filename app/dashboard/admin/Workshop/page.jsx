@@ -323,7 +323,7 @@ const WorkshopModule = () => {
             Register Participant
           </Button>
         </DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ maxHeight: '70vh', overflowY: 'auto', px: 2, }}>
           <DynamicTable
             columns={participantColumns}
             data={participants.slice(
