@@ -1,7 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import Link from "next/link";
 import {
   Drawer,
   List,
@@ -16,42 +15,69 @@ import {
   IconButton,
   ListItemIcon,
   Avatar,
+  LinearProgress,
 } from "@mui/material";
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import WorkIcon from '@mui/icons-material/Work';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import MenuIcon from '@mui/icons-material/Menu';
-import LogoutIcon from '@mui/icons-material/Logout';
-import DescriptionIcon from '@mui/icons-material/Description';
-import HomeIcon from '@mui/icons-material/Home';
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import WorkIcon from "@mui/icons-material/Work";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import MenuIcon from "@mui/icons-material/Menu";
+import LogoutIcon from "@mui/icons-material/Logout";
+import HomeIcon from "@mui/icons-material/Home";
+import { useDispatch } from "react-redux";
+import { setLogout } from "../redux/slices/adminAuthSlice";
 
 const drawerWidth = 240;
+
 const menuItems = [
   { text: "Job Card", path: "/dashboard/admin/jobcard", icon: <DashboardIcon /> },
   { text: "Booking", path: "/dashboard/admin/booking", icon: <LibraryBooksIcon /> },
-  { text: "Available Slots", path: "/dashboard/admin/AvailableSlotsManagement", icon: <AccessTimeIcon  /> },
+  { text: "Available Slots", path: "/dashboard/admin/AvailableSlotsManagement", icon: <AccessTimeIcon /> },
   { text: "Workshop", path: "/dashboard/admin/Workshop", icon: <WorkIcon /> },
   { text: "Students", path: "/dashboard/admin/Student", icon: <HomeIcon /> },
   { text: "Role", path: "/dashboard/admin/JobRole", icon: <WorkIcon /> },
   { text: "job-role-templates", path: "/dashboard/admin/job-role-templates", icon: <LibraryBooksIcon /> },
-  { text: "JobCardsPage", path: "/dashboard/admin/JobCardsPage", icon: <AccessTimeIcon  /> },
+  { text: "JobCardsPage", path: "/dashboard/admin/JobCardsPage", icon: <AccessTimeIcon /> },
 ];
 
 export default function TeacherLayout({ children }) {
   const router = useRouter();
+  const dispatch = useDispatch();
   const pathname = usePathname();
+
   const [open, setOpen] = useState(true);
+  const [logoutLoading, setLogoutLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(false);
+
+  // Show loading bar when route changes
+  useEffect(() => {
+    setPageLoading(false); // new page has mounted
+  }, [pathname]);
+
+  const handleNavigation = (path) => {
+    if (path !== pathname) {
+      setPageLoading(true);
+      router.push(path);
+    }
+  };
 
   const handleLogout = () => {
-    localStorage.removeItem("role");
-    router.push("/dashboard/admin/login");
+    setLogoutLoading(true);
+    dispatch(setLogout());
+    router.replace("/dashboard/admin/login");
   };
 
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
+
+      {pageLoading && (
+        <LinearProgress
+          color="primary"
+          sx={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 9999 }}
+        />
+      )}
 
       {/* Top App Bar */}
       <AppBar
@@ -89,7 +115,6 @@ export default function TeacherLayout({ children }) {
           },
         }}
       >
-        {/* Sidebar Header */}
         <Toolbar
           sx={{
             display: "flex",
@@ -106,13 +131,12 @@ export default function TeacherLayout({ children }) {
 
         <Divider />
 
-        {/* Sidebar Menu Items */}
         <List sx={{ flexGrow: 1 }}>
           {menuItems.map((item) => (
             <ListItem
               key={item.text}
-              component={Link}
-              href={item.path}
+              button
+              onClick={() => handleNavigation(item.path)}
               selected={pathname === item.path}
               sx={{
                 backgroundColor: pathname === item.path ? "#106861" : "transparent",
@@ -137,7 +161,6 @@ export default function TeacherLayout({ children }) {
 
         <Divider />
 
-        {/* Admin Avatar & Logout */}
         <Box
           sx={{
             display: "flex",
@@ -148,26 +171,35 @@ export default function TeacherLayout({ children }) {
         >
           <Avatar sx={{ width: 50, height: 50, mb: 1 }}>A</Avatar>
           {open && <Typography variant="body1">Admin</Typography>}
+
           <ListItem
             component="button"
             onClick={handleLogout}
+            disabled={logoutLoading}
             sx={{
               mt: 1,
               borderRadius: "10px",
               width: "90%",
-              color: "red",
+              color: logoutLoading ? "gray" : "red",
               justifyContent: open ? "initial" : "center",
             }}
           >
-            <ListItemIcon sx={{ color: "red" }}>
-              <LogoutIcon />
+            <ListItemIcon sx={{ color: logoutLoading ? "gray" : "red" }}>
+              {logoutLoading ? (
+                <LinearProgress color="inherit" sx={{ width: "100%" }} />
+              ) : (
+                <LogoutIcon />
+              )}
             </ListItemIcon>
-            {open && <ListItemText primary="Logout" />}
+            {open && (
+              <ListItemText
+                primary={logoutLoading ? "Logging out..." : "Logout"}
+              />
+            )}
           </ListItem>
         </Box>
       </Drawer>
 
-      {/* Main Content Area */}
       <Box
         component="main"
         sx={{

@@ -14,9 +14,9 @@ export default function TeacherBooking() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
-  const token = useSelector((state) => state.studentAuth.token);
-
-
+  const token = useSelector((state) => state.adminAuth.token);
+  
+  
   useEffect(() => {
     const fetchInterviews = async () => {
       try {

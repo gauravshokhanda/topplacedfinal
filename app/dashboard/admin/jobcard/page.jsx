@@ -47,7 +47,7 @@ export default function JobCardAdminPanel() {
   const fetchJobCards = async () => {
     try {
       setLoading(true);
-      const res = await API.get('jobcards', {
+      const res = await API.get('job-cards', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setJobCards(res.data);
@@ -72,7 +72,7 @@ export default function JobCardAdminPanel() {
 
   const handleEditSave = async () => {
     try {
-      await API.put(`jobcards/${selectedCard._id}`, selectedCard, {
+      await API.put(`job-cards/${selectedCard._id}`, selectedCard, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setOpenEdit(false);
@@ -96,7 +96,7 @@ export default function JobCardAdminPanel() {
 
   const handleAddJobCard = async () => {
     try {
-      await API.post('jobcards', newCard, {
+      await API.post('job-cards', newCard, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setOpenAdd(false);

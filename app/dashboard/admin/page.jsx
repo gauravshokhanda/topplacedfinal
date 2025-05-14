@@ -1,22 +1,30 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
 import { Container, Typography } from "@mui/material";
 
-export default function AdminPage() {
+export default function AdminDashboard() {
   const router = useRouter();
-  const [isAuthorized, setIsAuthorized] = useState(false);
+  const { token, user } = useSelector((state) => state.adminAuth);
+  const [isMounted, setIsMounted] = useState(false); // ✅ Fix hydration
 
+  // ✅ Ensure this runs only on client
   useEffect(() => {
-    const role = localStorage.getItem("role");
-    if (role !== "admin") {
-      router.push("/dashboard/admin/login");
-    } else {
-      setIsAuthorized(true);
-    }
+    setIsMounted(true);
   }, []);
 
-  if (!isAuthorized) return null;
+  // ✅ Redirect if not authorized (after mount)
+  useEffect(() => {
+    if (!isMounted) return;
+
+    if (!token || user?.role?.toLowerCase() !== "admin") {
+      router.replace("/dashboard/admin/login");
+    }
+  }, [isMounted, token, user, router]);
+
+  // ✅ Prevent hydration mismatch
+  if (!isMounted || !token || user?.role?.toLowerCase() !== "admin") return null;
 
   return (
     <Container sx={{ textAlign: "center", mt: 10 }}>

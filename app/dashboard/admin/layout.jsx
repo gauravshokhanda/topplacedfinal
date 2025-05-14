@@ -1,28 +1,32 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { useSelector } from "react-redux";
 import AdminSidebarLayout from "@/components/AdminSidebarLayout";
 import { CircularProgress, Box } from "@mui/material";
 
 export default function AdminLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
+
+  const { token, user } = useSelector((state) => state.adminAuth);
   const [isReady, setIsReady] = useState(false);
   const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
-    const role = localStorage.getItem("role");
+    console.log("layout useeffect")
+    setTimeout(() => {
+      if (pathname === "/dashboard/admin/login") {
+        setIsAuthorized(true); // allow login page always
+      } else if (token && user?.role === "admin") {
+        setIsAuthorized(true); // allow admin access
+      } else {
+        router.replace("/dashboard/admin/login");
+      }
 
-    if (pathname === "/dashboard/admin/login") {
-      setIsAuthorized(true); // Allow rendering login page
-    } else if (role === "admin") {
-      setIsAuthorized(true); // Allow admin pages
-    } else {
-      router.push("/dashboard/admin/login");
-    }
-
-    setIsReady(true);
-  }, [pathname]);
+      setIsReady(true);
+    }, 100); // slight delay for redux-persist hydration
+  }, [pathname, token, user]);
 
   if (!isReady) {
     return (
@@ -35,6 +39,6 @@ export default function AdminLayout({ children }) {
   if (!isAuthorized) return null;
 
   return pathname === "/dashboard/admin/login"
-    ? children // don't show sidebar
+    ? children
     : <AdminSidebarLayout>{children}</AdminSidebarLayout>;
 }
