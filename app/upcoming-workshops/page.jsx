@@ -18,8 +18,8 @@ export default function UpcomingWorkshops() {
   const router = useRouter(); // ✅ Initialize router
 
   useEffect(() => {
-    API
-      .get("workshops")
+    axios
+      .get("https://testing.topplaced.com/ap")
       .then((res) => {
         setWorkshops(res.data);
         setLoading(false);

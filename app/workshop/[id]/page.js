@@ -12,7 +12,6 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { ToastContainer } from "react-toastify";
-import dayjs from "dayjs";
 import WorkshopRegisterForm from "../../../components/workshopRegisterForm";
 
 export default function WorkshopRegistrationPage() {
@@ -139,9 +138,7 @@ export default function WorkshopRegistrationPage() {
           </Grid>
         </Grid>
 
-
         <WorkshopRegisterForm workshopId={id} />
-
       </Grid>
     </Box>
   );

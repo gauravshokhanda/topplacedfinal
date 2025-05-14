@@ -1,0 +1,37 @@
+name: 🚀 Deploy Next.js Static Site to HostMyCode
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⏬ Checkout Code
+        uses: actions/checkout@v3
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: 📦 Install Dependencies
+        run: npm ci
+
+      - name: 🛠️ Build & Export Static Site
+        run: |
+          npm run build
+          npm run export
+
+      - name: 🚀 Upload Exported Files to HostMyCode
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "out/*"
+          target: "/home/topplace/public_html"
