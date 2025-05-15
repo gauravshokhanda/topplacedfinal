@@ -20,7 +20,7 @@ export default function UpcomingWorkshops() {
 
   useEffect(() => {
     axios
-      .get("https://testing.topplaced.com/ap")
+      .get("https://testing.topplaced.com/api/workshop")
       .then((res) => {
         setWorkshops(res.data);
         setLoading(false);
