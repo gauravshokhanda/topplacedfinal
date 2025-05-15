@@ -203,12 +203,12 @@ const StudentList = () => {
                     <DeleteIcon fontSize="small" sx={{ mr: 1 }} /> Delete
                 </MenuItem>
                 <MenuItem onClick={() => { handleVerify(menuRow); handleMenuClose(); }}>
-                    ✅ Verify
+                    Jobcard
                 </MenuItem>
             </Menu>
 
             <Dialog open={openCardModal} onClose={() => setOpenCardModal(false)} maxWidth="sm" fullWidth>
-                <DialogTitle>Verify {cardStudent?.name}</DialogTitle>
+                <DialogTitle>Jobcard of {cardStudent?.name}</DialogTitle>
                 <DialogContent>
                     {cardFields.map((field, idx) => (
                         <TextField

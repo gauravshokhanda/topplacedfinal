@@ -1,22 +1,9 @@
-'use client';
+"use client";
 
 import { useEffect, useRef, useState } from 'react';
 import {
-  Box,
-  Typography,
-  Grid,
-  Card,
-  Avatar,
-  Button,
-  TextField,
-  CircularProgress,
-  Snackbar,
-  Switch,
-  FormControlLabel,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
+  Box, Typography, Grid, Card, Avatar, Button, TextField, CircularProgress, Snackbar,
+  Switch, FormControlLabel, Select, MenuItem, FormControl, InputLabel
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import EditIcon from '@mui/icons-material/Edit';
@@ -42,7 +29,7 @@ const initialInfo = {
   technicalSkills: '',
   softSkills: '',
   certifications: '',
-  working: false, // ✅ Added
+  working: false,
 };
 
 export default function ProfileStudent() {
@@ -53,6 +40,7 @@ export default function ProfileStudent() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [profileImageUrl, setProfileImageUrl] = useState('');
   const [resumeUrl, setResumeUrl] = useState('');
+  const [studentId, setStudentId] = useState(null); // ✅ Store for assign-role API
 
   const imageRef = useRef();
   const resumeRef = useRef();
@@ -65,6 +53,7 @@ export default function ProfileStudent() {
         });
         const data = res.data;
         const details = data.profile?.studentDetails || {};
+        setStudentId(data._id); // ✅ store ID
         setStudentInfo({
           ...initialInfo,
           name: data.name,
@@ -117,20 +106,30 @@ export default function ProfileStudent() {
       const payload = { ...studentInfo };
 
       ['technicalSkills', 'softSkills', 'certifications'].forEach((key) => {
-        const value = payload[key];
-        if (value && typeof value === 'string') {
-          const arr = value
-            .split(',')
-            .map((item) => item.trim())
-            .filter((item) => item.length > 0);
-          payload[key] = JSON.stringify(arr.length > 0 ? arr : []);
+        if (typeof payload[key] === 'string') {
+          payload[key] = JSON.stringify(
+            payload[key]
+              .split(',')
+              .map((item) => item.trim())
+              .filter((item) => item.length > 0)
+          );
         }
       });
-      console.log('Payload to API:', payload);
-      const respose = await API.put('auth/profile', payload, {
+
+      // ✅ Save profile first
+      await API.put('auth/profile', payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log("respose", respose)
+
+      // ✅ Assign jobRoleId using position
+      if (studentInfo.position && studentId) {
+        await API.put(`students/assign-role/${studentId}`, {
+          position: studentInfo.position,
+        }, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
+
       setSnackbarOpen(true);
       setIsEditing(false);
     } catch (err) {
@@ -159,32 +158,12 @@ export default function ProfileStudent() {
                 }}
                 onClick={() => imageRef.current?.click()}
               />
-              <input
-                hidden
-                type="file"
-                accept="image/*"
-                ref={imageRef}
-                onChange={() => uploadFile('image', imageRef)}
-              />
-              <Typography variant="body2" sx={{ mt: 1, color: '#0A6E6E' }}>
-                Tap to upload image
-              </Typography>
-              <Button
-                startIcon={<CloudUploadIcon />}
-                variant="outlined"
-                fullWidth
-                sx={{ mt: 2, color: '#0A6E6E', borderColor: '#0A6E6E' }}
-                onClick={() => resumeRef.current?.click()}
-              >
+              <input hidden type="file" accept="image/*" ref={imageRef} onChange={() => uploadFile('image', imageRef)} />
+              <Typography variant="body2" sx={{ mt: 1, color: '#0A6E6E' }}>Tap to upload image</Typography>
+              <Button startIcon={<CloudUploadIcon />} variant="outlined" fullWidth sx={{ mt: 2, color: '#0A6E6E', borderColor: '#0A6E6E' }} onClick={() => resumeRef.current?.click()}>
                 Upload Resume
               </Button>
-              <input
-                hidden
-                ref={resumeRef}
-                type="file"
-                accept="application/pdf"
-                onChange={() => uploadFile('resume', resumeRef)}
-              />
+              <input hidden ref={resumeRef} type="file" accept="application/pdf" onChange={() => uploadFile('resume', resumeRef)} />
               {resumeUrl && (
                 <Typography variant="body2" sx={{ mt: 1 }}>
                   <a href={resumeUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#0A6E6E' }}>
@@ -197,16 +176,9 @@ export default function ProfileStudent() {
 
           <Grid item xs={12} md={8}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-              <Typography variant="h6" fontWeight="bold" color="#0A6E6E">
-                My Profile
-              </Typography>
+              <Typography variant="h6" fontWeight="bold" color="#0A6E6E">My Profile</Typography>
               {!isEditing && (
-                <Button
-                  variant="outlined"
-                  startIcon={<EditIcon />}
-                  onClick={() => setIsEditing(true)}
-                  sx={{ borderColor: '#0A6E6E', color: '#0A6E6E' }}
-                >
+                <Button variant="outlined" startIcon={<EditIcon />} onClick={() => setIsEditing(true)} sx={{ borderColor: '#0A6E6E', color: '#0A6E6E' }}>
                   Edit
                 </Button>
               )}
@@ -216,7 +188,6 @@ export default function ProfileStudent() {
               {Object.entries(studentInfo).map(([key, value]) => {
                 if (key === 'image' || key === 'resume') return null;
 
-                // 🟢 Handle "experience" as dropdown
                 if (key === 'experience') {
                   return (
                     <Grid item xs={12} sm={6} key={key}>
@@ -240,7 +211,6 @@ export default function ProfileStudent() {
                   );
                 }
 
-                // 🟢 Handle "working" as a switch
                 if (key === 'working') {
                   return (
                     <Grid item xs={12} sm={6} key={key}>
@@ -252,7 +222,6 @@ export default function ProfileStudent() {
                               setStudentInfo({ ...studentInfo, working: e.target.checked })
                             }
                             disabled={!isEditing}
-                            color="primary"
                           />
                         }
                         label="Currently Working?"
@@ -271,12 +240,7 @@ export default function ProfileStudent() {
                       onChange={handleInputChange}
                       disabled={!isEditing}
                       InputLabelProps={{ style: { color: '#37474f' } }}
-                      InputProps={{
-                        style: {
-                          backgroundColor: '#ffffff',
-                          borderRadius: 8,
-                        },
-                      }}
+                      InputProps={{ style: { backgroundColor: '#ffffff', borderRadius: 8 } }}
                     />
                   </Grid>
                 );
@@ -294,11 +258,7 @@ export default function ProfileStudent() {
                 >
                   Save
                 </Button>
-                <Button
-                  variant="outlined"
-                  onClick={() => setIsEditing(false)}
-                  sx={{ borderColor: '#0A6E6E', color: '#0A6E6E' }}
-                >
+                <Button variant="outlined" onClick={() => setIsEditing(false)} sx={{ borderColor: '#0A6E6E', color: '#0A6E6E' }}>
                   Cancel
                 </Button>
               </Box>
@@ -306,12 +266,7 @@ export default function ProfileStudent() {
           </Grid>
         </Grid>
       </Card>
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={3000}
-        onClose={() => setSnackbarOpen(false)}
-        message="Profile updated successfully"
-      />
+      <Snackbar open={snackbarOpen} autoHideDuration={3000} onClose={() => setSnackbarOpen(false)} message="Profile updated successfully" />
     </Box>
   );
 }

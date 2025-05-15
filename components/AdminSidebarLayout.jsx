@@ -31,14 +31,14 @@ import { setLogout } from "../redux/slices/adminAuthSlice";
 const drawerWidth = 240;
 
 const menuItems = [
+  { text: "Students", path: "/dashboard/admin/Student", icon: <HomeIcon /> },
+  { text: "Role", path: "/dashboard/admin/JobRole", icon: <WorkIcon /> },
   { text: "Job Card", path: "/dashboard/admin/jobcard", icon: <DashboardIcon /> },
+  { text: "job-role-templates", path: "/dashboard/admin/job-role-templates", icon: <LibraryBooksIcon /> },
   { text: "Booking", path: "/dashboard/admin/booking", icon: <LibraryBooksIcon /> },
   { text: "Available Slots", path: "/dashboard/admin/AvailableSlotsManagement", icon: <AccessTimeIcon /> },
   { text: "Workshop", path: "/dashboard/admin/Workshop", icon: <WorkIcon /> },
-  { text: "Students", path: "/dashboard/admin/Student", icon: <HomeIcon /> },
-  { text: "Role", path: "/dashboard/admin/JobRole", icon: <WorkIcon /> },
-  { text: "job-role-templates", path: "/dashboard/admin/job-role-templates", icon: <LibraryBooksIcon /> },
-  { text: "JobCardsPage", path: "/dashboard/admin/JobCardsPage", icon: <AccessTimeIcon /> },
+  // { text: "JobCardsPage", path: "/dashboard/admin/JobCardsPage", icon: <AccessTimeIcon /> },
 ];
 
 export default function TeacherLayout({ children }) {
