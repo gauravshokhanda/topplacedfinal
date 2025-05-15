@@ -70,7 +70,10 @@ export default function AdminLoginPage() {
       dispatch(setLogin({ token, user }));
       router.push("/dashboard/admin");
     } catch (err) {
-      alert(err?.response?.data?.message || `${isLogin ? "Login" : "Signup"} failed.`);
+      alert(
+        err?.response?.data?.message ||
+          `${isLogin ? "Login" : "Signup"} failed.`
+      );
     } finally {
       setLoading(false);
     }
@@ -144,7 +147,7 @@ export default function AdminLoginPage() {
           </Button>
         </form>
 
-        <Box mt={3}>
+        {/* <Box mt={3}>
           <Typography variant="body2" sx={{ fontSize: "14px" }}>
             {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
             <Link
@@ -155,7 +158,7 @@ export default function AdminLoginPage() {
               {isLogin ? "Sign up here" : "Login here"}
             </Link>
           </Typography>
-        </Box>
+        </Box> */}
       </Paper>
     </Container>
   );
