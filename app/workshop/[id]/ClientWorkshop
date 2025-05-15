@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axios from "axios";
 import {
   Box,
   Grid,
@@ -12,14 +11,15 @@ import {
 } from "@mui/material";
 import { ToastContainer } from "react-toastify";
 import WorkshopRegisterForm from "../../../components/workshopRegisterForm";
+import { API } from "../../config/apiConfig";
 
 const [loading, setLoading] = useState(true);
 const [workshop, setWorkshop] = useState < any > null;
 
 useEffect(() => {
   if (id) {
-    axios
-      .get(`https://testing.topplaced.com/api/workshops/${id}`)
+    API
+      .get(`workshops/${id}`)
       .then((res) => {
         setWorkshop(res.data);
         setLoading(false);

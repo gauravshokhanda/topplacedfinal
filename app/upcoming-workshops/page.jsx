@@ -7,20 +7,19 @@ import {
   CardContent,
   Typography,
   CircularProgress,
+  Box,
 } from "@mui/material";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { API } from "@/app/config/apiConfig";
-import axios from "axios";
 
 export default function UpcomingWorkshops() {
   const [workshops, setWorkshops] = useState([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter(); // ✅ Initialize router
+  const router = useRouter();
 
   useEffect(() => {
-    axios
-      .get("https://testing.topplaced.com/api/workshop")
+    API.get("workshops")
       .then((res) => {
         setWorkshops(res.data);
         setLoading(false);
@@ -41,9 +40,17 @@ export default function UpcomingWorkshops() {
       <Typography variant="h4" fontWeight={700} color="#106861" gutterBottom>
         Upcoming Workshops
       </Typography>
-
       {loading ? (
-        <CircularProgress />
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "60vh",
+          }}
+        >
+          <CircularProgress size={48} sx={{ color: "#106861" }} />
+        </Box>
       ) : workshops.length === 0 ? (
         <Typography variant="body1">No workshops available.</Typography>
       ) : (
@@ -51,12 +58,12 @@ export default function UpcomingWorkshops() {
           {workshops.map((workshop) => (
             <Grid item xs={12} md={6} key={workshop._id}>
               <Card
-                onClick={() => handleCardClick(workshop._id)} // ✅ Click handler
+                onClick={() => handleCardClick(workshop._id)}
                 sx={{
                   backgroundColor: "#f9f9f9",
                   p: 2,
                   boxShadow: 3,
-                  cursor: "pointer", // ✅ Better UX
+                  cursor: "pointer",
                   transition: "transform 0.2s",
                   "&:hover": {
                     transform: "scale(1.02)",
@@ -79,7 +86,6 @@ export default function UpcomingWorkshops() {
                   <Typography variant="body2" color="text.secondary">
                     Price: ₹{workshop.price.toFixed(2)}
                   </Typography>
-                  {/* Add description when API supports it */}
                 </CardContent>
               </Card>
             </Grid>
