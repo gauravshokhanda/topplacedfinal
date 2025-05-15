@@ -11,6 +11,7 @@ import {
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { API } from "@/app/config/apiConfig";
+import axios from "axios";
 
 export default function UpcomingWorkshops() {
   const [workshops, setWorkshops] = useState([]);
@@ -19,7 +20,7 @@ export default function UpcomingWorkshops() {
 
   useEffect(() => {
     axios
-      .get("https://testing.topplaced.com/ap")
+      .get("https://testing.topplaced.com/api/workshop")
       .then((res) => {
         setWorkshops(res.data);
         setLoading(false);

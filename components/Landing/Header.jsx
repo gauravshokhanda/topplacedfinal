@@ -19,13 +19,11 @@ import AuthModal from "@/components/AuthModal";
 import { useSelector } from "react-redux";
 import { CircularProgress } from "@mui/material";
 
-
 const navItems = [
   { label: "How It Works", id: "how-it-works" },
   { label: "Skills", id: "skills-section" },
   { label: "Workshops", path: "/upcoming-workshops" },
 ];
-
 
 export default function Header() {
   const router = useRouter();
@@ -34,7 +32,6 @@ export default function Header() {
   const [openAuthModal, setOpenAuthModal] = useState(false);
   const [authInitiatedFromHeader, setAuthInitiatedFromHeader] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
-
 
   const user = useSelector((state) => state.studentAuth.user);
 
@@ -51,7 +48,6 @@ export default function Header() {
     }
   }, [user, authInitiatedFromHeader]);
 
-
   const handleGetStarted = () => {
     if (user) {
       setRedirecting(true); // show loading spinner immediately
@@ -66,11 +62,6 @@ export default function Header() {
       setOpenAuthModal(true);
     }
   };
-  
-
-
-
-
 
   const scrollToSection = (id) => {
     const isOnLandingPage = pathname === "/";
@@ -87,12 +78,21 @@ export default function Header() {
   };
 
   const toggleDrawer = (open) => (event) => {
-    if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) return;
+    if (
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    )
+      return;
     setDrawerOpen(open);
   };
 
   const drawer = (
-    <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)} onKeyDown={toggleDrawer(false)}>
+    <Box
+      sx={{ width: 250 }}
+      role="presentation"
+      onClick={toggleDrawer(false)}
+      onKeyDown={toggleDrawer(false)}
+    >
       <List>
         {navItems.map((item) => (
           <ListItem
@@ -106,20 +106,22 @@ export default function Header() {
             <ListItemText primary={item.label} />
           </ListItem>
         ))}
-        <ListItem button onClick={() => {
-          setDrawerOpen(false);
-          handleGetStarted();
-        }}>
+        <ListItem
+          button
+          onClick={() => {
+            setDrawerOpen(false);
+            handleGetStarted();
+          }}
+        >
           <ListItemText primary="Get Started" />
         </ListItem>
-
       </List>
     </Box>
   );
 
   return (
     <>
-      <AppBar position="static" sx={{ background: "#0A6E6E" }}>
+      <AppBar position="static" sx={{ background: "#106861" }}>
         <Toolbar>
           <Typography
             variant="h6"
@@ -134,7 +136,10 @@ export default function Header() {
             {navItems.map((item) =>
               item.path ? (
                 <Link key={item.label} href={item.path} passHref>
-                  <Button color="inherit" sx={{ fontWeight: "bold", textTransform: "capitalize" }}>
+                  <Button
+                    color="inherit"
+                    sx={{ fontWeight: "bold", textTransform: "capitalize" }}
+                  >
                     {item.label}
                   </Button>
                 </Link>
@@ -164,7 +169,6 @@ export default function Header() {
                 "Get Started"
               )}
             </Button>
-
           </Box>
 
           {/* Mobile Menu Icon */}
