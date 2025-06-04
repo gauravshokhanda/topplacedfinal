@@ -171,6 +171,36 @@ const WorkshopModule = () => {
   const workshopColumns = [
     { id: 'workshopName', label: 'Workshop Name' },
     {
+      id: 'coverImage',
+      label: 'Cover Image',
+      render: (row) =>
+        row.coverImage ? (
+          <img
+            src={row.coverImage}
+            alt="cover"
+            style={{
+              width: 80,
+              height: 60,
+              objectFit: 'cover',
+              borderRadius: 6,
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            }}
+          />
+        ) : (
+          <img
+            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(row.workshopName || 'W')}&background=106861&color=fff&rounded=true&size=60`}
+            alt="Default Avatar"
+            style={{
+              width: 60,
+              height: 60,
+              borderRadius: '50%',
+              border: '2px solid #ccc',
+            }}
+          />
+        ),
+    },
+
+    {
       id: 'dateTime',
       label: 'Date & Time',
       render: (row) => new Date(row.dateTime).toLocaleString(),
@@ -178,6 +208,16 @@ const WorkshopModule = () => {
     { id: 'meetingLink', label: 'Meeting Link' },
     { id: 'price', label: 'Price', render: (row) => `$${row.price.toFixed(2)}` },
     { id: 'totalRegistered', label: 'Total Registered' },
+    {
+      id: 'description',
+      label: 'Description',
+      render: (row) => (
+        <Typography variant="body2" sx={{ maxWidth: 300, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {row.description || '—'}
+        </Typography>
+      ),
+    },
+
     {
       id: 'whatYoullLearn',
       label: 'What You\'ll Learn',

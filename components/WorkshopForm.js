@@ -14,6 +14,9 @@ import {
 } from "@mui/material";
 import { Add, Remove } from "@mui/icons-material";
 
+const MAX_FILE_SIZE_MB = 2;
+const ALLOWED_FORMATS = ["image/jpeg", "image/png", "image/webp"];
+
 const WorkshopForm = ({ open, onClose, onSubmit, initialData = {} }) => {
   const [formData, setFormData] = useState({
     workshopName: "",
@@ -25,6 +28,8 @@ const WorkshopForm = ({ open, onClose, onSubmit, initialData = {} }) => {
     coverImage: "",
     coverImageFile: null,
   });
+  const [dragActive, setDragActive] = useState(false);
+  const [imageError, setImageError] = useState("");
 
   useEffect(() => {
     if (initialData) {
@@ -36,11 +41,12 @@ const WorkshopForm = ({ open, onClose, onSubmit, initialData = {} }) => {
         meetingLink: initialData.meetingLink || "",
         price: initialData.price || 19.49,
         description: initialData.description || "",
-        coverImage: initialData.coverImage || "",
         whatYoullLearn:
           initialData.whatYoullLearn?.length > 0
             ? initialData.whatYoullLearn
             : [""],
+        coverImage: initialData.coverImage || "",
+        coverImageFile: null,
       });
     }
   }, [initialData]);
@@ -50,14 +56,42 @@ const WorkshopForm = ({ open, onClose, onSubmit, initialData = {} }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleImageValidation = (file) => {
+    if (!ALLOWED_FORMATS.includes(file.type)) {
+      return "Only JPG, PNG, or WEBP images are allowed.";
+    }
+    if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+      return `File size should be under ${MAX_FILE_SIZE_MB}MB.`;
+    }
+    return "";
+  };
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData((prev) => ({
-        ...prev,
-        coverImageFile: file,
-        coverImage: URL.createObjectURL(file), // for preview only
-      }));
+      const error = handleImageValidation(file);
+      if (error) return setImageError(error);
+      setImageError("");
+      setFormData((prev) => ({ ...prev, coverImageFile: file }));
+    }
+  };
+
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(e.type === "dragenter" || e.type === "dragover");
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      const file = e.dataTransfer.files[0];
+      const error = handleImageValidation(file);
+      if (error) return setImageError(error);
+      setImageError("");
+      setFormData((prev) => ({ ...prev, coverImageFile: file }));
     }
   };
 
@@ -82,6 +116,7 @@ const WorkshopForm = ({ open, onClose, onSubmit, initialData = {} }) => {
       setFormData((prev) => ({ ...prev, whatYoullLearn: newLearnPoints }));
     }
   };
+
   const handleSubmit = () => {
     const cleanedPoints = formData.whatYoullLearn.filter(
       (point) => point.trim() !== ""
@@ -100,6 +135,7 @@ const WorkshopForm = ({ open, onClose, onSubmit, initialData = {} }) => {
     cleanedPoints.forEach((point, index) =>
       payload.append(`whatYoullLearn[${index}]`, point)
     );
+
     if (formData.coverImageFile) {
       payload.append("coverImage", formData.coverImageFile);
     }
@@ -115,93 +151,67 @@ const WorkshopForm = ({ open, onClose, onSubmit, initialData = {} }) => {
       </DialogTitle>
       <DialogContent>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}>
-          <TextField
-            label="Workshop Name"
-            name="workshopName"
-            value={formData.workshopName}
-            onChange={handleChange}
-            fullWidth
-            required
-          />
-          <TextField
-            label="Date and Time"
-            name="dateTime"
-            type="datetime-local"
-            value={formData.dateTime}
-            onChange={handleChange}
-            fullWidth
-            required
-            InputLabelProps={{ shrink: true }}
-          />
-          <TextField
-            label="Meeting Link"
-            name="meetingLink"
-            value={formData.meetingLink}
-            onChange={handleChange}
-            fullWidth
-            required
-          />
-          <TextField
-            label="Price"
-            name="price"
-            type="number"
-            value={formData.price}
-            onChange={handleChange}
-            fullWidth
-            required
-            inputProps={{ step: "0.01" }}
-          />
-          <TextField
-            label="Description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            fullWidth
-            multiline
-            minRows={2}
-          />
+          <TextField label="Workshop Name" name="workshopName" value={formData.workshopName} onChange={handleChange} fullWidth required />
+          <TextField label="Date and Time" name="dateTime" type="datetime-local" value={formData.dateTime} onChange={handleChange} fullWidth required InputLabelProps={{ shrink: true }} />
+          <TextField label="Meeting Link" name="meetingLink" value={formData.meetingLink} onChange={handleChange} fullWidth required />
+          <TextField label="Price" name="price" type="number" value={formData.price} onChange={handleChange} fullWidth required inputProps={{ step: "0.01" }} />
+          <TextField label="Description" name="description" value={formData.description} onChange={handleChange} fullWidth multiline minRows={2} />
 
-          <Box>
-            <Typography variant="subtitle1" gutterBottom>
-              Cover Image
+          <Box
+            onDragEnter={handleDrag}
+            onDragOver={handleDrag}
+            onDragLeave={handleDrag}
+            onDrop={handleDrop}
+            sx={{
+              border: dragActive ? "2px dashed #106861" : "2px dashed #ccc",
+              padding: 2,
+              borderRadius: 2,
+              textAlign: "center",
+              cursor: "pointer",
+            }}
+          >
+            <Typography variant="body2" color="textSecondary">
+              Drag and drop your cover image here, or click to upload
             </Typography>
-            <input type="file" accept="image/*" onChange={handleFileChange} />
-            {formData.coverImage && (
-              <Box mt={1}>
-                <img
-                  src={formData.coverImage}
-                  alt="Preview"
-                  style={{
-                    width: "100%",
-                    maxHeight: 200,
-                    objectFit: "cover",
-                    borderRadius: 8,
-                  }}
-                />
-              </Box>
+            <input
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              id="coverImageUpload"
+              onChange={handleFileChange}
+            />
+            <label htmlFor="coverImageUpload">
+              <Button variant="outlined" component="span" sx={{ mt: 1 }}>Browse</Button>
+            </label>
+            {imageError && (
+              <Typography color="error" variant="caption">{imageError}</Typography>
             )}
           </Box>
 
+          {(formData.coverImage || formData.coverImageFile) && (
+            <Box mt={1}>
+              <Typography variant="body2" color="textSecondary" gutterBottom>
+                {formData.coverImageFile ? "New Image Preview:" : "Current Uploaded Image:"}
+              </Typography>
+              <img
+                src={formData.coverImageFile ? URL.createObjectURL(formData.coverImageFile) : formData.coverImage}
+                alt="Preview"
+                style={{ width: "100%", maxHeight: 220, objectFit: "cover", borderRadius: 8, border: "1px solid #ccc" }}
+              />
+            </Box>
+          )}
+
           <Box>
-            <Typography variant="subtitle1">What You&apos;ll Learn</Typography>
+            <Typography variant="subtitle1">What You'll Learn</Typography>
             {formData.whatYoullLearn.map((point, index) => (
-              <Box
-                key={index}
-                sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}
-              >
+              <Box key={index} sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
                 <TextField
                   label={`Learning Point ${index + 1}`}
                   value={point}
-                  onChange={(e) =>
-                    handleLearnPointChange(index, e.target.value)
-                  }
-                  fullWidth
-                  required
+                  onChange={(e) => handleLearnPointChange(index, e.target.value)}
+                  fullWidth required
                 />
-                <IconButton
-                  onClick={() => removeLearnPoint(index)}
-                  disabled={formData.whatYoullLearn.length === 1}
-                >
+                <IconButton onClick={() => removeLearnPoint(index)} disabled={formData.whatYoullLearn.length === 1}>
                   <Remove />
                 </IconButton>
                 {index === formData.whatYoullLearn.length - 1 && (
@@ -215,9 +225,7 @@ const WorkshopForm = ({ open, onClose, onSubmit, initialData = {} }) => {
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="secondary">
-          Cancel
-        </Button>
+        <Button onClick={onClose} color="secondary">Cancel</Button>
         <Button onClick={handleSubmit} color="primary" variant="contained">
           {initialData._id ? "Update" : "Create"}
         </Button>

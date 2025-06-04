@@ -54,7 +54,7 @@ const DynamicTable = ({
   onRowsPerPageChange,
   page,
   rowsPerPage,
-  onRowClick, // Add onRowClick prop
+  onRowClick, 
 }) => {
   if (loading) {
     return (

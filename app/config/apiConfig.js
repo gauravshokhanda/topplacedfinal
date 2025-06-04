@@ -8,9 +8,9 @@ const API = axios.create({
   baseURL: "http://localhost:5100/api/",
   // baseURL: "https://testing.topplaced.com/api",
 
-  headers: {
-    "Content-Type": "application/json",
-  },
+  // headers: {
+  //   "Content-Type": "application/json",
+  // },
   withCredentials: true,
 });
 export { API, baseUrl };
