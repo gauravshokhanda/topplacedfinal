@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -11,26 +11,36 @@ import {
   Box,
   IconButton,
   Typography,
-} from '@mui/material';
-import { Add, Remove } from '@mui/icons-material';
+} from "@mui/material";
+import { Add, Remove } from "@mui/icons-material";
 
 const WorkshopForm = ({ open, onClose, onSubmit, initialData = {} }) => {
   const [formData, setFormData] = useState({
-    workshopName: '',
-    dateTime: '',
-    meetingLink: '',
+    workshopName: "",
+    dateTime: "",
+    meetingLink: "",
     price: 19.49,
-    whatYoullLearn: [''],
+    whatYoullLearn: [""],
+    description: "",
+    coverImage: "",
+    coverImageFile: null,
   });
 
   useEffect(() => {
     if (initialData) {
       setFormData({
-        workshopName: initialData.workshopName || '',
-        dateTime: initialData.dateTime ? new Date(initialData.dateTime).toISOString().slice(0, 16) : '',
-        meetingLink: initialData.meetingLink || '',
+        workshopName: initialData.workshopName || "",
+        dateTime: initialData.dateTime
+          ? new Date(initialData.dateTime).toISOString().slice(0, 16)
+          : "",
+        meetingLink: initialData.meetingLink || "",
         price: initialData.price || 19.49,
-        whatYoullLearn: initialData.whatYoullLearn?.length > 0 ? initialData.whatYoullLearn : [''],
+        description: initialData.description || "",
+        coverImage: initialData.coverImage || "",
+        whatYoullLearn:
+          initialData.whatYoullLearn?.length > 0
+            ? initialData.whatYoullLearn
+            : [""],
       });
     }
   }, [initialData]);
@@ -40,6 +50,17 @@ const WorkshopForm = ({ open, onClose, onSubmit, initialData = {} }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prev) => ({
+        ...prev,
+        coverImageFile: file,
+        coverImage: URL.createObjectURL(file), // for preview only
+      }));
+    }
+  };
+
   const handleLearnPointChange = (index, value) => {
     const newLearnPoints = [...formData.whatYoullLearn];
     newLearnPoints[index] = value;
@@ -47,35 +68,53 @@ const WorkshopForm = ({ open, onClose, onSubmit, initialData = {} }) => {
   };
 
   const addLearnPoint = () => {
-    setFormData((prev) => ({ ...prev, whatYoullLearn: [...prev.whatYoullLearn, ''] }));
+    setFormData((prev) => ({
+      ...prev,
+      whatYoullLearn: [...prev.whatYoullLearn, ""],
+    }));
   };
 
   const removeLearnPoint = (index) => {
     if (formData.whatYoullLearn.length > 1) {
-      const newLearnPoints = formData.whatYoullLearn.filter((_, i) => i !== index);
+      const newLearnPoints = formData.whatYoullLearn.filter(
+        (_, i) => i !== index
+      );
       setFormData((prev) => ({ ...prev, whatYoullLearn: newLearnPoints }));
     }
   };
-
   const handleSubmit = () => {
-    // Ensure whatYoullLearn doesn't include empty strings
-    const cleanedFormData = {
-      ...formData,
-      whatYoullLearn: formData.whatYoullLearn.filter((point) => point.trim() !== ''),
-    };
-    if (cleanedFormData.whatYoullLearn.length === 0) {
-      alert('Please provide at least one learning point.');
+    const cleanedPoints = formData.whatYoullLearn.filter(
+      (point) => point.trim() !== ""
+    );
+    if (cleanedPoints.length === 0) {
+      alert("Please provide at least one learning point.");
       return;
     }
-    onSubmit(cleanedFormData);
+
+    const payload = new FormData();
+    payload.append("workshopName", formData.workshopName);
+    payload.append("dateTime", formData.dateTime);
+    payload.append("meetingLink", formData.meetingLink);
+    payload.append("price", formData.price);
+    payload.append("description", formData.description);
+    cleanedPoints.forEach((point, index) =>
+      payload.append(`whatYoullLearn[${index}]`, point)
+    );
+    if (formData.coverImageFile) {
+      payload.append("coverImage", formData.coverImageFile);
+    }
+
+    onSubmit(payload);
     onClose();
   };
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{initialData._id ? 'Update Workshop' : 'Create Workshop'}</DialogTitle>
+      <DialogTitle>
+        {initialData._id ? "Update Workshop" : "Create Workshop"}
+      </DialogTitle>
       <DialogContent>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}>
           <TextField
             label="Workshop Name"
             name="workshopName"
@@ -110,16 +149,52 @@ const WorkshopForm = ({ open, onClose, onSubmit, initialData = {} }) => {
             onChange={handleChange}
             fullWidth
             required
-            inputProps={{ step: '0.01' }}
+            inputProps={{ step: "0.01" }}
           />
+          <TextField
+            label="Description"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            fullWidth
+            multiline
+            minRows={2}
+          />
+
           <Box>
-            <Typography variant="subtitle1">What You'll Learn</Typography>
+            <Typography variant="subtitle1" gutterBottom>
+              Cover Image
+            </Typography>
+            <input type="file" accept="image/*" onChange={handleFileChange} />
+            {formData.coverImage && (
+              <Box mt={1}>
+                <img
+                  src={formData.coverImage}
+                  alt="Preview"
+                  style={{
+                    width: "100%",
+                    maxHeight: 200,
+                    objectFit: "cover",
+                    borderRadius: 8,
+                  }}
+                />
+              </Box>
+            )}
+          </Box>
+
+          <Box>
+            <Typography variant="subtitle1">What You&apos;ll Learn</Typography>
             {formData.whatYoullLearn.map((point, index) => (
-              <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+              <Box
+                key={index}
+                sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}
+              >
                 <TextField
                   label={`Learning Point ${index + 1}`}
                   value={point}
-                  onChange={(e) => handleLearnPointChange(index, e.target.value)}
+                  onChange={(e) =>
+                    handleLearnPointChange(index, e.target.value)
+                  }
                   fullWidth
                   required
                 />
@@ -144,7 +219,7 @@ const WorkshopForm = ({ open, onClose, onSubmit, initialData = {} }) => {
           Cancel
         </Button>
         <Button onClick={handleSubmit} color="primary" variant="contained">
-          {initialData._id ? 'Update' : 'Create'}
+          {initialData._id ? "Update" : "Create"}
         </Button>
       </DialogActions>
     </Dialog>
